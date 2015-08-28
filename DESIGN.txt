@@ -1,0 +1,13 @@
+Genre: Fighting game
+Title: Mediocre Road Warrior
+Goal: 
+	The player advances levels by defeating enemies. 
+	Each level is a fight against a different enemy, and the player wins by defeating them all.
+	Defeat an enemy by reducing its HP to zero. 
+	If the player dies, game over.
+Mechanics: 
+	Use the arrow keys to move and ASD for attacks.
+	Combinations of keys launch different attacks, with different properties.
+	Block by holding back, jump by pressing up.
+Levels: 
+	Each level is against a different enemy, each of whom has different moves and/or AI
