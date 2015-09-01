@@ -82,6 +82,15 @@ public class Character{
 		case "UB":
 			jump(-1);
 			break;
+		case "L":
+			// TODO
+			break;
+		case "M":
+			// TODO
+			break;
+		case "H":
+			// TODO
+			break;
 		case "BL":
 			attacking = true;
 			attackBL();
@@ -131,7 +140,6 @@ public class Character{
 
 			@Override
 			public void handle(ActionEvent event) {
-				// TODO Auto-generated method stub
 				inAir = false;
 			}
 			
@@ -168,7 +176,6 @@ public class Character{
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				myGame.myRoot.getChildren().remove(circle);
 				attacking = false;
 			}
@@ -216,7 +223,6 @@ public class Character{
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				myGame.myRoot.getChildren().remove(circle);
 			}
 			
@@ -331,7 +337,6 @@ public class Character{
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				fireball.executeAction();
 				idleAnimation();
 				attacking = false;
@@ -351,7 +356,6 @@ public class Character{
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				//myImage.setTranslateY(myGame.myScene.getHeight()/2+25);
 				idleAnimation();
 			}

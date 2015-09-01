@@ -45,27 +45,7 @@ class Game {
      * but these simple ways work too.
      */
     public void step (double elapsedTime) {
-    	currentState.update();
-//    	
-    	
-        // update attributes
-        // check for collisions
-        // with shapes, can check precisely
-//        Shape intersect = Shape.intersect(myPlayer, myBottomBlock);
-//        if (intersect.getBoundsInLocal().getWidth() != -1) {
-//            myPlayer.setFill(Color.MAROON);
-//        }
-//        else {
-//            myPlayer.setFill(Color.RED);
-//        }
-        // with images can only check bounding box
-//        if (myBottomBlock.getBoundsInParent().intersects(myBouncer.getBoundsInParent())) {
-//            myBottomBlock.setFill(Color.BURLYWOOD);
-//        }
-//        else {
-//            myBottomBlock.setFill(Color.BISQUE);
-//        }
-    	
+    	currentState.update();    	
     }
     
     public void changeState (GameState newState) {

@@ -4,6 +4,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 public class InputListener {
+	public boolean enterPressed;
 	public boolean upPressed;
 	public boolean downPressed;
 	public boolean rightPressed;
@@ -31,6 +32,9 @@ public class InputListener {
 	
 	public void keyPressed(KeyEvent ke) {
 		KeyCode code = ke.getCode();
+		if (code == KeyCode.ENTER) {
+			enterPressed = true;
+		}
 		if (code == KeyCode.UP) {
 			upPressed = true;
 			keyCombo.addLast(code.toString());
@@ -72,6 +76,9 @@ public class InputListener {
 
 	public void keyReleased(KeyEvent ke) {
 		KeyCode code = ke.getCode();
+		if (code == KeyCode.ENTER) {
+			enterPressed = false;
+		}
 		if (code == KeyCode.UP) {
 			upPressed = false;
 		} if (code == KeyCode.DOWN) {

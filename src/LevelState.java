@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class LevelState extends GameState {
@@ -64,19 +65,22 @@ public class LevelState extends GameState {
         //myRoot.getChildren().add(enemyImage);
 		
         p1Text = new Text();
+        p1Text.setFont(new Font("Courier", 100));
         p1Text.setX(100);
-        p1Text.setY(50);
+        p1Text.setY(100);
         p1Text.setText(""+myPlayer.getHealth());
         myRoot.getChildren().add(p1Text);
         p2Text = new Text();
-        p2Text.setX(700);
-        p2Text.setY(50);
+        p2Text.setFont(new Font("Courier", 100));
+        p2Text.setX(500);
+        p2Text.setY(100);
         p2Text.setText(""+myEnemy.getHealth());
         myRoot.getChildren().add(p2Text);
         inputText = new Text();
         inputText.setX(50);
         inputText.setY(100);
         myRoot.getChildren().add(inputText);
+        inputText.setVisible(false);
         
 		moveTree = new InputTree();
 		String[] codes = {KeyCode.A.toString(), "FORWARD", KeyCode.DOWN.toString()};
@@ -91,6 +95,9 @@ public class LevelState extends GameState {
     	moveTree.addMove(codes, "QCFM");
     	codes = new String[]{KeyCode.D.toString(), "FORWARD", KeyCode.DOWN.toString()};
     	moveTree.addMove(codes, "QCFH");
+    	moveTree.addMove(new String[]{KeyCode.A.toString()}, "L");
+    	moveTree.addMove(new String[]{KeyCode.S.toString()}, "M");
+    	moveTree.addMove(new String[]{KeyCode.D.toString()}, "H");
 //    	codes = new String[]{"FORWARD"};
 //    	moveTree.addMove(codes, "F");
 //    	moveTree.printTree(moveTree.myRoot);
@@ -100,7 +107,6 @@ public class LevelState extends GameState {
 	}
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
 		ImageView playerHurtbox = myPlayer.getHurtbox();
 		ImageView enemyHurtbox = myEnemy.getHurtbox();
 		double myPlayerWidth = playerHurtbox.getBoundsInParent().getWidth();
@@ -132,12 +138,14 @@ public class LevelState extends GameState {
     		}
     	}
 		inputText.setText(inputs.keyCombo.toString());
+    	// TODO: enemy hitboxes
     	
-    		// TODO: enemy hitboxes
-    	
-//        if (playerImage.getY() + myPlayerHeight / 2> groundLevel) {
-//        	playerImage.setY(groundLevel - myPlayerHeight / 2);
-//        }
+		if (myEnemy.getHealth() <= 0) {
+			p2Text.setText("KO");
+			inputs.keyCombo.clear();
+			myGame.changeState(new VictoryState(myGame));
+		}
+		
         if (!myEnemy.getInAir()) {
         	myEnemy.executeAction("U");
         }
@@ -183,7 +191,10 @@ public class LevelState extends GameState {
         		}
         	}
         }
-
+        if (inputs.enterPressed) {
+        	inputText.setVisible(!inputText.isVisible());
+        }
+        
         if (frameCount == 30) {
             myGame.myInputManager.discardInput();
         }
