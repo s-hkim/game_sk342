@@ -8,6 +8,8 @@ public class InputListener {
 	public boolean downPressed;
 	public boolean rightPressed;
 	public boolean leftPressed;
+	public boolean forwardPressed;
+	public boolean backwardPressed;
 	public boolean aPressed;
 	public boolean sPressed;
 	public boolean dPressed;
@@ -19,6 +21,8 @@ public class InputListener {
 		downPressed = false;
 		rightPressed = false;
 		leftPressed = false;
+		forwardPressed = false;
+		backwardPressed = false;
 		aPressed = false;
 		sPressed = false;
 		dPressed = false;
@@ -36,15 +40,19 @@ public class InputListener {
 		} if (code == KeyCode.RIGHT) {
 			rightPressed = true;
 			if (left) {
+				forwardPressed = true;
 				keyCombo.addLast("FORWARD");
 			} else {
+				backwardPressed = true;
 				keyCombo.addLast("BACKWARD");
 			}
 		} if (code == KeyCode.LEFT) {
 			leftPressed = true;
 			if (left) {
+				backwardPressed = true;
 				keyCombo.addLast("BACKWARD");
 			} else {
+				forwardPressed = true;
 				keyCombo.addLast("FORWARD");
 			}
 		} if (code == KeyCode.A) {
@@ -70,8 +78,18 @@ public class InputListener {
 			downPressed = false;
 		} if (code == KeyCode.RIGHT) {
 			rightPressed = false;
+			if (left) {
+				forwardPressed = false;
+			} else {
+				backwardPressed = false;
+			}
 		} if (code == KeyCode.LEFT) {
 			leftPressed = false;
+			if (left) {
+				backwardPressed = false;
+			} else {
+				forwardPressed = false;
+			}
 		} if (code == KeyCode.A) {
 			aPressed = false;
 		} if (code == KeyCode.S) {

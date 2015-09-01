@@ -9,7 +9,6 @@ import javafx.scene.paint.Color;
  */
 class Game {
     public static final String TITLE = "Mediocre Road Warrior";
-
     public Group myRoot;
     public Scene myScene;
     public GameState currentState;

@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -12,8 +13,6 @@ import javafx.scene.text.Text;
 public class LevelState extends GameState {
 	private Game myGame;
 	private InputListener inputs;
-	private ImageView playerImage;
-	private ImageView enemyImage;
 	private Character myPlayer;
 	private Character myEnemy;
 	private Text p1Text;
@@ -24,7 +23,6 @@ public class LevelState extends GameState {
 	private Group myRoot;
 	double width;
 	double height;
-	private int groundLevel = 300;
 	private int frameCount;
 
     public InputTree moveTree;
@@ -44,20 +42,26 @@ public class LevelState extends GameState {
 		Image image = new Image(getClass().getClassLoader().getResourceAsStream("background.png"));
         ImageView background = new ImageView(image);
         myRoot.getChildren().add(background);
-        image = new Image(getClass().getClassLoader().getResourceAsStream("duke.gif"));
+        
+        image = new Image(getClass().getClassLoader().getResourceAsStream("spritesheet.gif"));
+		ImageView imageView = new ImageView(image);
+		imageView.setViewport(new Rectangle2D(277, 0, 50, 85));
+		myGame.myRoot.getChildren().add(imageView);
+		ImageView imageView2 = new ImageView(image);
+		imageView2.setViewport(new Rectangle2D(277, 0, 50, 85));
+		myGame.myRoot.getChildren().add(imageView2);
+        
+		imageView.setTranslateX(width/2 - 200);
+		imageView.setTranslateY(height/2+25);
+		imageView2.setTranslateX(width/2 + 150);
+		imageView2.setTranslateY(height/2+25);
 		
-		playerImage = new ImageView(image);
-        playerImage.setX(width / 2 - playerImage.getBoundsInLocal().getWidth() / 2 - 200);
-        playerImage.setY(height / 2  - playerImage.getBoundsInLocal().getHeight() / 2 + 50);
-        myPlayer = new Character(myGame, playerImage, true);
+        image = new Image(getClass().getClassLoader().getResourceAsStream("duke.gif"));        
+		myPlayer = new Character(myGame, true, imageView);
+        myEnemy = new Character(myGame, false, imageView2);
         
-        enemyImage = new ImageView(image);
-        enemyImage.setX(width / 2 - enemyImage.getBoundsInLocal().getWidth() / 2 + 150);
-        enemyImage.setY(height / 2  - enemyImage.getBoundsInLocal().getHeight() / 2 + 50);
-        myEnemy = new Character(myGame, enemyImage, false);
-        
-		myRoot.getChildren().add(playerImage);
-        myRoot.getChildren().add(enemyImage);
+		//myRoot.getChildren().add(playerImage);
+        //myRoot.getChildren().add(enemyImage);
 		
         p1Text = new Text();
         p1Text.setX(100);
@@ -87,17 +91,23 @@ public class LevelState extends GameState {
     	moveTree.addMove(codes, "QCFM");
     	codes = new String[]{KeyCode.D.toString(), "FORWARD", KeyCode.DOWN.toString()};
     	moveTree.addMove(codes, "QCFH");
+//    	codes = new String[]{"FORWARD"};
+//    	moveTree.addMove(codes, "F");
 //    	moveTree.printTree(moveTree.myRoot);
 //    	System.out.println("");
 //    	System.out.println(moveTree.parseInput(inputCodes));
+    	
 	}
 	@Override
 	public void update() {
 		// TODO Auto-generated method stub
-		double myPlayerWidth = playerImage.getBoundsInLocal().getWidth();
-        double myPlayerHeight = playerImage.getBoundsInLocal().getHeight();
-		double myEnemyCenter = enemyImage.getX() + enemyImage.getBoundsInLocal().getWidth() / 2;
-		double myPlayerCenter = playerImage.getX() + myPlayerWidth;
+		ImageView playerHurtbox = myPlayer.getHurtbox();
+		ImageView enemyHurtbox = myEnemy.getHurtbox();
+		double myPlayerWidth = playerHurtbox.getBoundsInParent().getWidth();
+        // double myPlayerHeight = playerHurtbox.getBoundsInParent().getHeight();
+		double myEnemyCenter = enemyHurtbox.getBoundsInParent().getMinX() + enemyHurtbox.getBoundsInParent().getWidth() / 2;
+		double myPlayerCenter = playerHurtbox.getBoundsInParent().getMinX() + myPlayerWidth/2;
+		
 		if (myEnemyCenter - myPlayerCenter > 0) {
 			myPlayer.setOrientation(true);
 		} else {
@@ -113,7 +123,7 @@ public class LevelState extends GameState {
     		if (cx - cr < 0 || cx + cr > myScene.getWidth()) {
     			myRoot.getChildren().remove(c);
     		}
-    		if (c.getBoundsInParent().intersects(enemyImage.getBoundsInParent())) {
+    		if (c.getBoundsInParent().intersects(enemyHurtbox.getBoundsInParent())) {
     			myEnemy.inflictDamage(f.myDamage);
     			p2Text.setText(""+myEnemy.getHealth());
     			myRoot.getChildren().remove(c);
@@ -125,9 +135,9 @@ public class LevelState extends GameState {
     	
     		// TODO: enemy hitboxes
     	
-        if (playerImage.getY() + myPlayerHeight / 2> groundLevel) {
-        	playerImage.setY(groundLevel - myPlayerHeight / 2);
-        }
+//        if (playerImage.getY() + myPlayerHeight / 2> groundLevel) {
+//        	playerImage.setY(groundLevel - myPlayerHeight / 2);
+//        }
         if (!myEnemy.getInAir()) {
         	myEnemy.executeAction("U");
         }
@@ -143,26 +153,37 @@ public class LevelState extends GameState {
         	//        	myPlayer.executeAction("QCFL");
         	//        }
 
-        	if (playerImage.getY() == groundLevel - myPlayerHeight / 2) {
-        		if (inputs.upPressed && inputs.rightPressed) {
-        			myPlayer.executeAction("UF");
-        		} else if (inputs.upPressed && inputs.leftPressed) {
-        			myPlayer.executeAction("UB");
-        		} else if (inputs.upPressed) {
-        			// System.out.println(myTopBlock.getY());
-        			myPlayer.executeAction("U");
-        		} else if (inputs.rightPressed) {
-        			playerImage.setX(playerImage.getX() + 5);
-        		} else if (inputs.leftPressed) {
-        			playerImage.setX(playerImage.getX() - 5);
+
+        	else if (inputs.upPressed && inputs.rightPressed) {
+        		myPlayer.executeAction("UF");
+        	} else if (inputs.upPressed && inputs.leftPressed) {
+        		myPlayer.executeAction("UB");
+        	} else if (inputs.upPressed) {
+        		// System.out.println(myTopBlock.getY());
+        		myPlayer.executeAction("U");
+        	} else if (inputs.downPressed || (inputs.downPressed && inputs.backwardPressed)) {
+        		myPlayer.executeAction("D");
+        	} else if (inputs.rightPressed) {
+        		if (playerHurtbox.getBoundsInParent().getMaxX() < width) {
+        			playerHurtbox.setX(playerHurtbox.getX()+ 2);
         		}
-        		if (playerImage.getX() + myPlayerWidth > myScene.getWidth()) {
-        			playerImage.setX(myScene.getWidth() - myPlayerWidth);
-        		} else if (playerImage.getX() < 0) {
-        			playerImage.setX(0);
+        		if (inputs.forwardPressed) {
+            		myPlayer.executeAction("F");
+        		} else {
+        			myPlayer.executeAction("B");
+        		}
+        	} else if (inputs.leftPressed) {
+        		if (playerHurtbox.getBoundsInParent().getMinX() > 0) {
+        			playerHurtbox.setX(playerHurtbox.getX()- 2);
+        		}
+        		if (inputs.backwardPressed) {
+            		myPlayer.executeAction("B");
+        		} else {
+        			myPlayer.executeAction("F");
         		}
         	}
         }
+
         if (frameCount == 30) {
             myGame.myInputManager.discardInput();
         }
