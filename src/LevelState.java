@@ -1,103 +1,115 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import javafx.animation.Animation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 public class LevelState extends GameState {
+	private static final int PLAYER_1 = 0;
+	private static final int PLAYER_2 = 1;
 	private Game myGame;
-	private InputListener inputs;
+	private InputListener myInputs;
 	private Character myPlayer;
 	private Character myEnemy;
-	private Text p1Text;
-	private Text p2Text;
-	private Text inputText;
-    
+	private Text myPlayerText;
+	private Text myEnemyText;
+	private Text myInputsText;
+    // TODO: add my
 	private Scene myScene;
 	private Group myRoot;
+	private SpriteTransition myBackgroundAnimation;
 	double width;
 	double height;
-	private int frameCount;
+	private int myFrameCount;
 
-    public InputTree moveTree;
+    private InputTree myMoveTree;
 	
 	public LevelState (Game g) {
 		myGame = g;
-		myScene = myGame.myScene;
-		myRoot = myGame.myRoot;
-		inputs = myGame.myInputManager;
-		inputs.keyCombo.clear();
+		myScene = myGame.getMyScene();
+		myRoot = myGame.getMyRoot();
+		myInputs = myGame.getMyInputManager();
+		myInputs.getPlayerKeyCombo().clear();
 		
-		frameCount = 0;
+		myFrameCount = 0;
 		myRoot.getChildren().clear();
 		width = myScene.getWidth();
 		height = myScene.getHeight();
 		
-		Image image = new Image(getClass().getClassLoader().getResourceAsStream("background.png"));
-        ImageView background = new ImageView(image);
-        myRoot.getChildren().add(background);
+		Image image = new Image(getClass().getClassLoader().getResourceAsStream("backgroundSprite.png"));
+		ImageView background = new ImageView(image);
+		background.setViewport(new Rectangle2D(0,0,800,336));
+		myRoot.getChildren().add(background);
+		myBackgroundAnimation = new SpriteTransition(background, 
+				Duration.millis(1000), 0, 0, 0, new int[]{800,800,800,800,800,800,800,800}, 
+				new int[]{336,336,336,336,336,336,336,336}, true);
+		myBackgroundAnimation.setCycleCount(Animation.INDEFINITE);
+		myBackgroundAnimation.play();
+		
+        myPlayerText = new Text();
+        myPlayerText.setFont(new Font("Courier", 100));
+        myPlayerText.setX(100);
+        myPlayerText.setY(100);
+        myRoot.getChildren().add(myPlayerText);
+        myEnemyText = new Text();
+        myEnemyText.setFont(new Font("Courier", 100));
+        myEnemyText.setX(500);
+        myEnemyText.setY(100);
+        myRoot.getChildren().add(myEnemyText);
         
         image = new Image(getClass().getClassLoader().getResourceAsStream("spritesheet.gif"));
-		ImageView imageView = new ImageView(image);
-		imageView.setViewport(new Rectangle2D(277, 0, 50, 85));
-		myGame.myRoot.getChildren().add(imageView);
-		ImageView imageView2 = new ImageView(image);
-		imageView2.setViewport(new Rectangle2D(277, 0, 50, 85));
-		myGame.myRoot.getChildren().add(imageView2);
+		ImageView playerImageView = new ImageView(image);
+		playerImageView.setViewport(new Rectangle2D(277, 0, 50, 85));
+		myGame.getMyRoot().getChildren().add(playerImageView);
+		ImageView enemyImageView = new ImageView(image);
+		enemyImageView.setViewport(new Rectangle2D(277, 0, 50, 85));
+		myGame.getMyRoot().getChildren().add(enemyImageView);
         
-		imageView.setTranslateX(width/2 - 200);
-		imageView.setTranslateY(height/2+25);
-		imageView2.setTranslateX(width/2 + 150);
-		imageView2.setTranslateY(height/2+25);
+		// TODO: set groundlevel
+		playerImageView.setTranslateX(width/2 - 200);
+		playerImageView.setTranslateY(height/2+45);
+		enemyImageView.setTranslateX(width/2 + 150);
+		enemyImageView.setTranslateY(height/2+45);
 		
-        image = new Image(getClass().getClassLoader().getResourceAsStream("duke.gif"));        
-		myPlayer = new Character(myGame, true, imageView);
-        myEnemy = new Character(myGame, false, imageView2);
+        myPlayer = new Character(myGame, true, playerImageView, PLAYER_1);
+        myEnemy = new Character(myGame, false, enemyImageView, PLAYER_2);
         
 		//myRoot.getChildren().add(playerImage);
         //myRoot.getChildren().add(enemyImage);
 		
-        p1Text = new Text();
-        p1Text.setFont(new Font("Courier", 100));
-        p1Text.setX(100);
-        p1Text.setY(100);
-        p1Text.setText(""+myPlayer.getHealth());
-        myRoot.getChildren().add(p1Text);
-        p2Text = new Text();
-        p2Text.setFont(new Font("Courier", 100));
-        p2Text.setX(500);
-        p2Text.setY(100);
-        p2Text.setText(""+myEnemy.getHealth());
-        myRoot.getChildren().add(p2Text);
-        inputText = new Text();
-        inputText.setX(50);
-        inputText.setY(100);
-        myRoot.getChildren().add(inputText);
-        inputText.setVisible(false);
+        myPlayerText.setText(""+myPlayer.getHealth());
+        myEnemyText.setText(""+myEnemy.getHealth());
         
-		moveTree = new InputTree();
-		String[] codes = {KeyCode.A.toString(), "FORWARD", KeyCode.DOWN.toString()};
-    	String[] codes2 = {KeyCode.A.toString(), "BACKWARD"};
+        myInputsText = new Text();
+        myInputsText.setX(50);
+        myInputsText.setY(200);
+        myRoot.getChildren().add(myInputsText);
+        myInputsText.setVisible(false);
+        
+		myMoveTree = new InputTree();
+		String[] codes = {"LIGHT", "FORWARD", "DOWN"};
+    	String[] codes2 = {"LIGHT", "BACKWARD"};
 //    	LinkedList<String> inputCodes = new LinkedList<String>();
 //    	inputCodes.add(KeyCode.DOWN.toString());
 //    	inputCodes.add("FORWARD");
 //    	inputCodes.add(KeyCode.A.toString());
-    	moveTree.addMove(codes, "QCFL");
-    	moveTree.addMove(codes2, "BL");
-    	codes = new String[]{KeyCode.S.toString(), "FORWARD", KeyCode.DOWN.toString()};
-    	moveTree.addMove(codes, "QCFM");
-    	codes = new String[]{KeyCode.D.toString(), "FORWARD", KeyCode.DOWN.toString()};
-    	moveTree.addMove(codes, "QCFH");
-    	moveTree.addMove(new String[]{KeyCode.A.toString()}, "L");
-    	moveTree.addMove(new String[]{KeyCode.S.toString()}, "M");
-    	moveTree.addMove(new String[]{KeyCode.D.toString()}, "H");
+    	myMoveTree.addMove(codes, "QCFL");
+    	myMoveTree.addMove(codes2, "BL");
+    	codes = new String[]{"MEDIUM", "FORWARD","DOWN"};
+    	myMoveTree.addMove(codes, "QCFM");
+    	codes = new String[]{"HARD", "FORWARD", "DOWN"};
+    	myMoveTree.addMove(codes, "QCFH");
+    	myMoveTree.addMove(new String[]{"LIGHT"}, "L");
+    	myMoveTree.addMove(new String[]{"LIGHT"}, "M");
+    	myMoveTree.addMove(new String[]{"LIGHT"}, "H");
 //    	codes = new String[]{"FORWARD"};
 //    	moveTree.addMove(codes, "F");
 //    	moveTree.printTree(moveTree.myRoot);
@@ -107,21 +119,75 @@ public class LevelState extends GameState {
 	}
 	@Override
 	public void update() {
+		handleOrientation();
+		
+		handleCollision(myPlayer, myEnemy);
+		handleCollision(myEnemy, myPlayer);
+		
+		myInputsText.setText(myInputs.getPlayerKeyCombo().toString());
+    	// TODO: enemy hitboxes
+		checkDeath(myPlayer);
+		checkDeath(myEnemy);
+		
+//        if (!myEnemy.getInAir()) {
+//        	myEnemy.executeAction("U");
+//        }
+        
+        doCharacterAction(myPlayer);
+        doCharacterAction(myEnemy);
+        if (myInputs.isEnterPressed()) {
+        	myInputsText.setVisible(!myInputsText.isVisible());
+        }
+        
+        if (myFrameCount == 30) {
+            myGame.getMyInputManager().discardInputsFromBoth();
+        }
+        myFrameCount++;
+        if (myFrameCount > 30) { 
+        	myFrameCount = 0;
+        }
+	}
+	private void checkDeath(Character character) {
+		if (character.getHealth() <= 0) {
+			if (character.getMyID() == PLAYER_1) {
+				myPlayerText.setText("KO");
+			}
+			if (character.getMyID() == PLAYER_2) {
+				myEnemyText.setText("KO");
+			}
+			myInputs.discardInputsFromBoth();
+			myGame.changeState(new VictoryState(myGame, character.getMyID()));
+		}
+	}
+	private void handleOrientation() {
 		ImageView playerHurtbox = myPlayer.getHurtbox();
 		ImageView enemyHurtbox = myEnemy.getHurtbox();
 		double myPlayerWidth = playerHurtbox.getBoundsInParent().getWidth();
-        // double myPlayerHeight = playerHurtbox.getBoundsInParent().getHeight();
+//      double myPlayerHeight = playerHurtbox.getBoundsInParent().getHeight();
 		double myEnemyCenter = enemyHurtbox.getBoundsInParent().getMinX() + enemyHurtbox.getBoundsInParent().getWidth() / 2;
 		double myPlayerCenter = playerHurtbox.getBoundsInParent().getMinX() + myPlayerWidth/2;
 		
 		if (myEnemyCenter - myPlayerCenter > 0) {
 			myPlayer.setOrientation(true);
+			myEnemy.setOrientation(false);
 		} else {
 			myPlayer.setOrientation(false);
+			myEnemy.setOrientation(true);
 		}
-		inputs.setOrientation(myPlayer.getOrientation());
-		ArrayList<Fireball> playerHitboxes = myPlayer.getHitboxes();
-		ArrayList<Fireball> tempArray = new ArrayList<Fireball>(playerHitboxes);
+		myInputs.setPlayerLeft(myPlayer.getOrientation());
+		myInputs.setEnemyLeft(myEnemy.getOrientation());
+	}
+	private void handleCollision(Character actor, Character victim) {
+		ArrayList<Fireball> hitboxes = actor.getHitboxes();
+		ArrayList<Fireball> tempArray = new ArrayList<Fireball>(hitboxes);
+		Text text;
+		if (victim == myPlayer) {
+			text = myPlayerText;
+		} else if (victim == myEnemy) {
+			text = myEnemyText;
+		} else {
+			return;
+		}
 		for (Fireball f: tempArray) {
 			Circle c = f.myHitbox;
     		double cx = c.getCenterX();
@@ -129,78 +195,88 @@ public class LevelState extends GameState {
     		if (cx - cr < 0 || cx + cr > myScene.getWidth()) {
     			myRoot.getChildren().remove(c);
     		}
-    		if (c.getBoundsInParent().intersects(enemyHurtbox.getBoundsInParent())) {
-    			myEnemy.inflictDamage(f.myDamage);
-    			p2Text.setText(""+myEnemy.getHealth());
+    		if (c.getBoundsInParent().intersects(victim.getHurtbox().getBoundsInParent())) {
+    			victim.inflictDamage(f.myDamage);
+    			text.setText(""+victim.getHealth());
     			myRoot.getChildren().remove(c);
-    			playerHitboxes.remove(f);
+    			hitboxes.remove(f);
     			
     		}
     	}
-		inputText.setText(inputs.keyCombo.toString());
-    	// TODO: enemy hitboxes
-    	
-		if (myEnemy.getHealth() <= 0) {
-			p2Text.setText("KO");
-			inputs.keyCombo.clear();
-			myGame.changeState(new VictoryState(myGame));
+	}
+	private void doCharacterAction(Character character) {
+		boolean up;
+		boolean down;
+		boolean right;
+		boolean left;
+		boolean back;
+		boolean front;
+		boolean light;
+		boolean medium;
+		boolean hard;
+		ImageView hurtbox = character.getHurtbox();
+		LinkedList<String> inputCodes;
+		if (character.getMyID() == PLAYER_1) {
+			up = myInputs.iswPressed();
+			right = myInputs.isdPressed();
+			left = myInputs.isaPressed();
+			down = myInputs.issPressed();
+			front = myInputs.isPlayerForwardPressed();
+			back = myInputs.isPlayerBackwardPressed();
+			inputCodes = myInputs.getPlayerKeyCombo();
+			light = myInputs.isfPressed();
+			medium = myInputs.isgPressed();
+			hard = myInputs.ishPressed();
+		} else if (character.getMyID() == PLAYER_2) {
+			up = myInputs.isUpPressed();
+			right = myInputs.isRightPressed();
+			left = myInputs.isLeftPressed();
+			down = myInputs.isDownPressed();
+			front = myInputs.isEnemyForwardPressed();
+			back = myInputs.isEnemyBackwardPressed();
+			inputCodes = myInputs.getEnemyKeyCombo();
+			light = myInputs.isiPressed();
+			medium = myInputs.isoPressed();
+			hard = myInputs.ispPressed();
+		} else {
+			return;
 		}
-		
-        if (!myEnemy.getInAir()) {
-        	myEnemy.executeAction("U");
-        }
-        if (!myPlayer.getInAir() && !myPlayer.getAttacking()) {
+		if (!character.getInAir() && !character.getAttacking()) {
 
-        	LinkedList<String> inputCodes = inputs.keyCombo;
-        	String instruction = moveTree.parseInput(inputCodes);
+        	String instruction = myMoveTree.parseInput(inputCodes);
         	if (instruction != null) {
         		inputCodes.clear();
-        		myPlayer.executeAction(instruction);
+        		character.executeAction(instruction);
         	}
-        	//        if (inputs.aPressed) {
-        	//        	myPlayer.executeAction("QCFL");
-        	//        }
-
-
-        	else if (inputs.upPressed && inputs.rightPressed) {
-        		myPlayer.executeAction("UF");
-        	} else if (inputs.upPressed && inputs.leftPressed) {
-        		myPlayer.executeAction("UB");
-        	} else if (inputs.upPressed) {
-        		// System.out.println(myTopBlock.getY());
-        		myPlayer.executeAction("U");
-        	} else if (inputs.downPressed || (inputs.downPressed && inputs.backwardPressed)) {
-        		myPlayer.executeAction("D");
-        	} else if (inputs.rightPressed) {
-        		if (playerHurtbox.getBoundsInParent().getMaxX() < width) {
-        			playerHurtbox.setX(playerHurtbox.getX()+ 2);
+        	
+        	else if (up && right) {
+        		character.executeAction("UF");
+        	} else if (up && left) {
+        		character.executeAction("UB");
+        	} else if (up) {
+        		character.executeAction("U");
+        	} else if (down || 
+        			(down && back)) {
+        		character.executeAction("D");
+        	} else if (right) {
+        		if (hurtbox.getBoundsInParent().getMaxX() < width) {
+        			hurtbox.setX(hurtbox.getX()+ 2);
         		}
-        		if (inputs.forwardPressed) {
-            		myPlayer.executeAction("F");
+        		if (front) {
+            		character.executeAction("F");
         		} else {
-        			myPlayer.executeAction("B");
+        			character.executeAction("B");
         		}
-        	} else if (inputs.leftPressed) {
-        		if (playerHurtbox.getBoundsInParent().getMinX() > 0) {
-        			playerHurtbox.setX(playerHurtbox.getX()- 2);
+        	} else if (left) {
+        		if (hurtbox.getBoundsInParent().getMinX() > 0) {
+        			hurtbox.setX(hurtbox.getX()- 2);
         		}
-        		if (inputs.backwardPressed) {
-            		myPlayer.executeAction("B");
+        		if (back) {
+            		character.executeAction("B");
         		} else {
-        			myPlayer.executeAction("F");
+        			character.executeAction("F");
         		}
         	}
-        }
-        if (inputs.enterPressed) {
-        	inputText.setVisible(!inputText.isVisible());
-        }
-        
-        if (frameCount == 30) {
-            myGame.myInputManager.discardInput();
-        }
-        frameCount++;
-        if (frameCount > 30) { 
-        	frameCount = 0;
         }
 	}
 

@@ -6,7 +6,7 @@ import javafx.util.Duration;
 
 public class SpriteTransition extends Transition {
 
-    public static final int SPRITE_CENTER = 274;
+    private int centerOffset = 274;
     private final ImageView imageView;
     private final int count;
     private final int offsetX;
@@ -14,19 +14,24 @@ public class SpriteTransition extends Transition {
     private final int[] widths;
     private final int[] heights;
     private int[] widthOffsets;
-    public final boolean left;
-    private final int direction;
+    private final boolean left;
+    public boolean isLeft() {
+		return left;
+	}
+
+	private final int direction;
 
     private int lastIndex;
 
-    public SpriteTransition(ImageView imageView, Duration duration, int offsetX, int offsetY, 
+    public SpriteTransition(ImageView imageView, Duration duration, int centerOffset, int offsetX, int offsetY, 
     		int[] widths, int[] heights, boolean left) {
         this.imageView = imageView;
         this.count = widths.length;
+        this.centerOffset = centerOffset;
         if (left) {
-        	this.offsetX = offsetX + SPRITE_CENTER;
+        	this.offsetX = offsetX + centerOffset;
         } else {
-        	this.offsetX = SPRITE_CENTER - offsetX;
+        	this.offsetX = centerOffset - offsetX;
         }
         widthOffsets = new int[widths.length];
         int s = 0;

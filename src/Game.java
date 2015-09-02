@@ -8,11 +8,11 @@ import javafx.scene.paint.Color;
  * TEMP
  */
 class Game {
-    public static final String TITLE = "Mediocre Road Warrior";
-    public Group myRoot;
-    public Scene myScene;
-    public GameState currentState;
-    public InputListener myInputManager;
+    private static final String TITLE = "Mediocre Road Warrior";
+    private Group myRoot;
+    private Scene myScene;
+    private GameState myCurrentState;
+    private InputListener myInputManager;
     
     /**
      * Returns name of the game.
@@ -21,7 +21,39 @@ class Game {
         return TITLE;
     }
 
-    /**
+    public Group getMyRoot() {
+		return myRoot;
+	}
+
+	public void setMyRoot(Group myRoot) {
+		this.myRoot = myRoot;
+	}
+
+	public Scene getMyScene() {
+		return myScene;
+	}
+
+	public void setMyScene(Scene myScene) {
+		this.myScene = myScene;
+	}
+
+	public GameState getCurrentState() {
+		return myCurrentState;
+	}
+
+	public void setCurrentState(GameState currentState) {
+		this.myCurrentState = currentState;
+	}
+
+	public InputListener getMyInputManager() {
+		return myInputManager;
+	}
+
+	public void setMyInputManager(InputListener myInputManager) {
+		this.myInputManager = myInputManager;
+	}
+
+	/**
      * Create the game's scene
      */
     public Scene init (int width, int height) {
@@ -33,7 +65,7 @@ class Game {
         // Wire up properties to key events:
         myScene.setOnKeyPressed(e -> myInputManager.keyPressed(e));
         myScene.setOnKeyReleased(e -> myInputManager.keyReleased(e));
-        currentState = new SplashState(this);
+        myCurrentState = new SplashState(this);
         // currentState = new LevelState(this, myInputManager);
         return myScene;
     }
@@ -45,11 +77,11 @@ class Game {
      * but these simple ways work too.
      */
     public void step (double elapsedTime) {
-    	currentState.update();    	
+    	myCurrentState.update();    	
     }
     
     public void changeState (GameState newState) {
-    	currentState = newState;
+    	setCurrentState(newState);
     }
     
 }

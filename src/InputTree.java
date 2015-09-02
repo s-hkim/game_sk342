@@ -2,20 +2,26 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class InputTree {
-	public InputTreeNode myRoot;
+	private InputTreeNode myRoot;
+	public InputTreeNode getMyRoot() {
+		return myRoot;
+	}
+	public void setMyRoot(InputTreeNode myRoot) {
+		this.myRoot = myRoot;
+	}
 	public InputTree () {
-		myRoot = new InputTreeNode(null, null);
+		this.myRoot = new InputTreeNode(null, null);
 		
 	}
 	public static class InputTreeNode {
-		public String myCode;
-		public String myMove;
-	    public ArrayList<InputTreeNode> myChildren;
+		private String myCode;
+		private String myMove;
+	    private ArrayList<InputTreeNode> myChildren;
 
 	    public InputTreeNode(String code, String move) {
-	        myCode = code;
-	        myMove = move;
-	        myChildren = new ArrayList<InputTreeNode>();
+	        this.myCode = code;
+	        this.myMove = move;
+	        this.myChildren = new ArrayList<InputTreeNode>();
 	    }
 	}
 	public void addMove (String[] codes, String move) {
