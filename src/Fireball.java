@@ -1,19 +1,59 @@
 import javafx.animation.Timeline;
+import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
 
 public class Fireball{
-	public Character myOrigin;
-	public Circle myHitbox;
-	public int myDamage;
-	public Timeline timeline;
-	public Fireball (Character o, Circle h, Timeline tl, int d) {
+	private Character myOrigin;
+	private Circle myHitbox;
+	private ImageView myImage;
+	private int myDamage;
+	public ImageView getMyImage() {
+		return myImage;
+	}
+	public void setMyImage(ImageView myImage) {
+		this.myImage = myImage;
+	}
+	private Timeline myTimeline;
+	public Character getMyOrigin() {
+		return myOrigin;
+	}
+	public void setMyOrigin(Character myOrigin) {
+		this.myOrigin = myOrigin;
+	}
+	public Circle getMyHitbox() {
+		return myHitbox;
+	}
+	public void setMyHitbox(Circle myHitbox) {
+		this.myHitbox = myHitbox;
+	}
+	public int getMyDamage() {
+		return myDamage;
+	}
+	public void setMyDamage(int myDamage) {
+		this.myDamage = myDamage;
+	}
+	public Timeline getMyTimeline() {
+		return myTimeline;
+	}
+	public void setMyTimeline(Timeline myTimeline) {
+		this.myTimeline = myTimeline;
+	}
+	public Fireball (Character o, Circle h, Timeline tl, int d, ImageView imageView) {
+		myImage = imageView;
 		myOrigin = o;
 		myHitbox = h;
-		timeline = tl;
+		myTimeline = tl;
 		myDamage = d;
+		myHitbox.setVisible(false);
 	}
 	public void executeAction() {
-		timeline.play();
+		myTimeline.play();
+	}
+	public void updateImage() {
+		double centerX = myHitbox.getCenterX();
+		double centerY = myHitbox.getCenterY();
+		myImage.setX(centerX - myImage.getBoundsInParent().getWidth()/2);
+		myImage.setY(centerY - myImage.getBoundsInParent().getHeight()/2);
 	}
 
 }

@@ -7,7 +7,9 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -69,8 +71,10 @@ public class LevelState extends GameState {
 		ImageView playerImageView = new ImageView(image);
 		playerImageView.setViewport(new Rectangle2D(277, 0, 50, 85));
 		myGame.getMyRoot().getChildren().add(playerImageView);
+		
+		image = new Image(getClass().getClassLoader().getResourceAsStream("spritesheet2.gif"));
 		ImageView enemyImageView = new ImageView(image);
-		enemyImageView.setViewport(new Rectangle2D(277, 0, 50, 85));
+		enemyImageView.setViewport(new Rectangle2D(221, 0, 50, 85));
 		myGame.getMyRoot().getChildren().add(enemyImageView);
         
 		// TODO: set groundlevel
@@ -108,8 +112,8 @@ public class LevelState extends GameState {
     	codes = new String[]{"HARD", "FORWARD", "DOWN"};
     	myMoveTree.addMove(codes, "QCFH");
     	myMoveTree.addMove(new String[]{"LIGHT"}, "L");
-    	myMoveTree.addMove(new String[]{"LIGHT"}, "M");
-    	myMoveTree.addMove(new String[]{"LIGHT"}, "H");
+    	myMoveTree.addMove(new String[]{"MEDIUM"}, "M");
+    	myMoveTree.addMove(new String[]{"HARD"}, "H");
 //    	codes = new String[]{"FORWARD"};
 //    	moveTree.addMove(codes, "F");
 //    	moveTree.printTree(moveTree.myRoot);
@@ -117,6 +121,7 @@ public class LevelState extends GameState {
 //    	System.out.println(moveTree.parseInput(inputCodes));
     	
 	}
+	
 	@Override
 	public void update() {
 		handleOrientation();
@@ -160,8 +165,8 @@ public class LevelState extends GameState {
 		}
 	}
 	private void handleOrientation() {
-		ImageView playerHurtbox = myPlayer.getHurtbox();
-		ImageView enemyHurtbox = myEnemy.getHurtbox();
+		ImageView playerHurtbox = myPlayer.getMyImage();
+		ImageView enemyHurtbox = myEnemy.getMyImage();
 		double myPlayerWidth = playerHurtbox.getBoundsInParent().getWidth();
 //      double myPlayerHeight = playerHurtbox.getBoundsInParent().getHeight();
 		double myEnemyCenter = enemyHurtbox.getBoundsInParent().getMinX() + enemyHurtbox.getBoundsInParent().getWidth() / 2;
@@ -189,18 +194,21 @@ public class LevelState extends GameState {
 			return;
 		}
 		for (Fireball f: tempArray) {
-			Circle c = f.myHitbox;
+			f.updateImage();
+			Circle c = f.getMyHitbox();
+			ImageView fireballImage = f.getMyImage();
     		double cx = c.getCenterX();
     		double cr = c.getRadius();
     		if (cx - cr < 0 || cx + cr > myScene.getWidth()) {
-    			myRoot.getChildren().remove(c);
+    			myRoot.getChildren().removeAll(c, fireballImage);
     		}
-    		if (c.getBoundsInParent().intersects(victim.getHurtbox().getBoundsInParent())) {
-    			victim.inflictDamage(f.myDamage);
+    		if (c.getBoundsInParent().intersects(victim.getMyImage().getBoundsInParent())) {
+    			victim.inflictDamage(f.getMyDamage());
+    			victim.animateHit();
     			text.setText(""+victim.getHealth());
-    			myRoot.getChildren().remove(c);
+    			myRoot.getChildren().removeAll(c, fireballImage);
     			hitboxes.remove(f);
-    			
+    			// TODO: remove victim's hitboxes
     		}
     	}
 	}
@@ -214,7 +222,7 @@ public class LevelState extends GameState {
 		boolean light;
 		boolean medium;
 		boolean hard;
-		ImageView hurtbox = character.getHurtbox();
+		ImageView hurtbox = character.getMyImage();
 		LinkedList<String> inputCodes;
 		if (character.getMyID() == PLAYER_1) {
 			up = myInputs.iswPressed();
@@ -244,6 +252,7 @@ public class LevelState extends GameState {
 		if (!character.getInAir() && !character.getAttacking()) {
 
         	String instruction = myMoveTree.parseInput(inputCodes);
+        	//System.out.println(instruction);
         	if (instruction != null) {
         		inputCodes.clear();
         		character.executeAction(instruction);
