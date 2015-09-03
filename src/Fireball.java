@@ -10,9 +10,6 @@ public class Fireball{
 	public ImageView getMyImage() {
 		return myImage;
 	}
-	public void setMyImage(ImageView myImage) {
-		this.myImage = myImage;
-	}
 	private Timeline myTimeline;
 	public Character getMyOrigin() {
 		return myOrigin;
@@ -38,6 +35,7 @@ public class Fireball{
 	public void setMyTimeline(Timeline myTimeline) {
 		this.myTimeline = myTimeline;
 	}
+	
 	public Fireball (Character o, Circle h, Timeline tl, int d, ImageView imageView) {
 		myImage = imageView;
 		myOrigin = o;
@@ -50,6 +48,9 @@ public class Fireball{
 		myTimeline.play();
 	}
 	public void updateImage() {
+		if (myImage == null) {
+			return;
+		}
 		double centerX = myHitbox.getCenterX();
 		double centerY = myHitbox.getCenterY();
 		myImage.setX(centerX - myImage.getBoundsInParent().getWidth()/2);

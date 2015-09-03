@@ -6,7 +6,7 @@ import javafx.util.Duration;
 
 public class SpriteTransition extends Transition {
 
-    private int centerOffset = 274;
+    private int centerOffset;
     private final ImageView imageView;
     private final int count;
     private final int offsetX;
@@ -29,9 +29,9 @@ public class SpriteTransition extends Transition {
         this.count = widths.length;
         this.centerOffset = centerOffset;
         if (left) {
-        	this.offsetX = offsetX + centerOffset;
+        	this.offsetX = offsetX + this.centerOffset;
         } else {
-        	this.offsetX = centerOffset - offsetX;
+        	this.offsetX = this.centerOffset - offsetX;
         }
         widthOffsets = new int[widths.length];
         int s = 0;

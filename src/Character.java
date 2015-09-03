@@ -2,7 +2,6 @@ import java.util.ArrayList;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
-import javafx.animation.ParallelTransition;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -20,10 +19,11 @@ public class Character{
 	private Game myGame;
 	private int mySpriteCenterOffset;
 	private ImageView myImage;
-	private ParallelTransition myJumping;
+	private Timeline myJumpingPhysics;
 	private SpriteTransition myIdle;
 	private SpriteTransition myAttack;
 	private SpriteTransition myWalkingForward;
+	private SpriteTransition myJumpingAnimation;
 	private Timeline myWalkingBackward;
 	private Timeline myCrouching;
 	private ArrayList<Fireball> myHitboxes;
@@ -41,7 +41,7 @@ public class Character{
 		animateWalkingForward();
 		animateWalkingBackward();
 		animateCrouching();
-		myJumping = new ParallelTransition();
+		myJumpingPhysics = new Timeline();
 		animateIdle();
 	}
 	
@@ -150,7 +150,9 @@ public class Character{
 		// TODO Auto-generated method stub
 		stopAnimation();
 		// TODO: add hitboxes to moves
-		Circle hitbox = new Circle();
+		Bounds bounds = myImage.getBoundsInParent();
+		Circle hitbox = new Circle(bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight()/2,
+				bounds.getWidth()/2);
 		myAttack = new SpriteTransition(myImage, Duration.millis(500), 
 				mySpriteCenterOffset, 3, 87, new int[]{0,49,63,55,75}, new int[]{0,85,85,85,85}, myLeft);
 		myAttack.setCycleCount(1);
@@ -237,10 +239,11 @@ public class Character{
 			}
 			
 		});
-		SpriteTransition st = jumpAnimation();
-		myJumping = new ParallelTransition();
-		myJumping.getChildren().addAll(tl, st);
-		myJumping.play();
+		// originally combined into a parallel transition
+		myJumpingAnimation = jumpAnimation();
+		myJumpingPhysics = tl;
+		myJumpingPhysics.play();
+		myJumpingAnimation.play();
 	}
 	public void attackBL() {
 		// TODO: get rid of this
@@ -428,8 +431,8 @@ public class Character{
 		myWalkingForward.stop();
 		myWalkingBackward.stop();
 		myCrouching.stop();
-		if (myJumping != null) {
-			myJumping.stop();
+		if (myJumpingAnimation != null) {
+			myJumpingAnimation.stop();
 		}
 		if (myIdle != null) {
 			myIdle.stop();
@@ -447,13 +450,15 @@ public class Character{
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				fireball.executeAction();
+				//fireball.executeAction();
 				animateIdle();
 			}
 			
 		});
 		myAttack = sprite;
 		myAttack.play();
+		fireball.getMyTimeline().setDelay(d);
+		fireball.executeAction();
 	}
 	private SpriteTransition jumpAnimation() {
 		stopAnimation();
@@ -474,7 +479,7 @@ public class Character{
 	}
 	private void walkAnimation() {
 		myIdle.stop();
-		myJumping.stop();
+		myJumpingPhysics.stop();
 		myWalkingBackward.stop();
 		myCrouching.stop();
 		if (myWalkingForward.isLeft() != myLeft) {
@@ -484,20 +489,20 @@ public class Character{
 	}
 	private void block() {
 		myIdle.stop();
-		myJumping.stop();
+		myJumpingPhysics.stop();
 		myWalkingForward.stop();
 		myCrouching.stop();
 		myWalkingBackward.play();
 	}
 	private void crouch() {
 		myIdle.stop();
-		myJumping.stop();
+		myJumpingPhysics.stop();
 		myWalkingForward.stop();
 		myWalkingBackward.stop();
 		myCrouching.play();
 	}
 	public boolean getInAir() {
-		return myJumping.getStatus() == Animation.Status.RUNNING;
+		return myJumpingPhysics.getStatus() == Animation.Status.RUNNING;
 	}
 	public boolean getAttacking() {
 		if (myAttack == null) {

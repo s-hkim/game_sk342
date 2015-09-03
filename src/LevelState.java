@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import javafx.animation.Animation;
+import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -208,9 +209,16 @@ public class LevelState extends GameState {
     			text.setText(""+victim.getHealth());
     			myRoot.getChildren().removeAll(c, fireballImage);
     			hitboxes.remove(f);
-    			// TODO: remove victim's hitboxes
+    			// TODO: remove victim's hitboxes?
     		}
     	}
+		if (actor.getAttacking()) {
+			Bounds actorBounds = actor.getMyImage().getBoundsInParent();
+			Bounds victimBounds = victim.getMyImage().getBoundsInParent();
+			if (actorBounds.intersects(victimBounds)) {
+				// TODO: figure this out
+			}
+		}
 	}
 	private void doCharacterAction(Character character) {
 		boolean up;
