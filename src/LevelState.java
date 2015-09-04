@@ -53,6 +53,10 @@ public class LevelState extends GameState {
 		createBackground();
 		createPlayer();
 		createEnemy();
+		if (myLevelType == TIMED_LEVEL) {
+        	myPlayer.setHealth(0);
+        	myEnemy.setHealth(0);
+        }
         createCharacterTexts();
         createInputsText();
 		createMoveTree();
@@ -243,13 +247,13 @@ public class LevelState extends GameState {
     		double cx = c.getCenterX();
     		double cr = c.getRadius();
     		if (cx - cr < 0 || cx + cr > mySceneWidth) {
-    			myRoot.getChildren().removeAll(c, fireballImage);
+    			myRoot.getChildren().remove(fireballImage);
     		}
     		if (c.getBoundsInParent().intersects(victim.getMyImage().getBoundsInParent())) {
     			victim.inflictDamage(f.getMyDamage());
     			victim.animateHit();
     			text.setText(""+victim.getHealth());
-    			myRoot.getChildren().removeAll(c, fireballImage);
+    			myRoot.getChildren().remove(fireballImage);
     			hitboxes.remove(f);
     			// TODO: remove victim's hitboxes?
     		}

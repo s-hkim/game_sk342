@@ -42,7 +42,6 @@ public class Fireball{
 		myHitbox = h;
 		myTimeline = tl;
 		myDamage = d;
-		myHitbox.setVisible(false);
 	}
 	public void executeAction() {
 		myTimeline.play();

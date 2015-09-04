@@ -138,13 +138,31 @@ public class Character{
 			break;
 		}
 	}
-	
-	private void lHit() {
-		stopAnimation();
-		// TODO: add hitboxes to moves
+	private void createHitbox(int damage, int cycleCount) {
+		// TODO Auto-generated method stub
 		Bounds bounds = myImage.getBoundsInParent();
 		Circle hitbox = new Circle(bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight()/2,
 				bounds.getWidth()/2);
+		Timeline tl = new Timeline();
+		tl.setCycleCount(cycleCount);
+		KeyFrame move = new KeyFrame(Duration.millis(1000/60),
+				new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent event) {
+			}
+		});
+		tl.getKeyFrames().add(move);
+		Fireball fireball = new Fireball(this, hitbox, tl, damage, null);
+		tl.setOnFinished(new EventHandler<ActionEvent>(){
+			@Override
+			public void handle(ActionEvent arg0) {
+				myHitboxes.remove(fireball);
+			}
+		});
+		myHitboxes.add(fireball);
+		fireball.executeAction();
+	}
+	private void lHit() {
+		stopAnimation();
 		myAttack = new SpriteTransition(myImage, Duration.millis(500), 
 				SPRITE_CENTER, 3, 87, new int[]{0,49,63,55,75}, new int[]{0,85,85,85,85}, myLeft);
 		myAttack.setCycleCount(1);
@@ -154,7 +172,7 @@ public class Character{
 				animateIdle();
 			}
 		});
-		// TODO: make sure doesnt interrupt
+		createHitbox(5, 28);
 		myAttack.play();
 	}
 	private void mHit() {
@@ -168,7 +186,7 @@ public class Character{
 				animateIdle();
 			}
 		});
-		// TODO: make sure doesnt interrupt
+		createHitbox(10, 28);
 		myAttack.play();
 	}
 	private void hHit() {
@@ -182,7 +200,7 @@ public class Character{
 				animateIdle();
 			}
 		});
-		// TODO: make sure doesnt interrupt
+		createHitbox(10, 43);
 		myAttack.play();
 	}
 
@@ -238,7 +256,6 @@ public class Character{
 		Circle circle = new Circle(bounds.getMinX() + 3*bounds.getWidth()/4 + direction*(40),
 				bounds.getMinY() + bounds.getHeight()/3, radius);
 		circle.setFill(Color.RED);
-		myGame.getMyRoot().getChildren().add(circle);
 		Image image = new Image(getClass().getClassLoader().getResourceAsStream("fireball.png"));
 		ImageView imageView = new ImageView(image);
 		if (!myLeft) imageView.setScaleX(-1);
@@ -271,8 +288,7 @@ public class Character{
 			@Override
 			public void handle(ActionEvent arg0) {
 				myHitboxes.remove(fireball);
-				// TODO:myGame.getMyRoot().getChildren().remove(circle);
-				myGame.getMyRoot().getChildren().removeAll(circle, imageView);
+				myGame.getMyRoot().getChildren().remove(imageView);
 			}
 		});
 		fireball.updateImage();
@@ -293,7 +309,6 @@ public class Character{
 		Circle circle = new Circle(bounds.getMinX() + 3*bounds.getWidth()/4 + direction*(40),
 				bounds.getMinY() + bounds.getHeight()/3, 15);
 		circle.setFill(Color.RED);
-		myGame.getMyRoot().getChildren().add(circle);
 		Image image = new Image(getClass().getClassLoader().getResourceAsStream("fireball.png"));
 		ImageView imageView = new ImageView(image);
 		if (!myLeft) imageView.setScaleX(-1);
