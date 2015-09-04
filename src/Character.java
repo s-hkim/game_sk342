@@ -51,7 +51,7 @@ public class Character{
 				if (myIsLeft){
 					myImage.setViewport(new Rectangle2D(330, 423, 48, 80));
 				} else {
-					myImage.setViewport(new Rectangle2D(274 - 56 - 48, 423, 48, 80));
+					myImage.setViewport(new Rectangle2D(170, 423, 48, 80));
 				}
 			}
 		}));

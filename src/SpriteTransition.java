@@ -3,6 +3,10 @@ import javafx.animation.Transition;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
+/*
+ * A sprite animation class
+ * based on code taken from: http://blog.netopyr.com/2012/03/09/creating-a-sprite-animation-with-javafx/
+ */
 
 public class SpriteTransition extends Transition {
 
