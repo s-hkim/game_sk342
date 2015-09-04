@@ -10,7 +10,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -18,109 +17,131 @@ import javafx.util.Duration;
 public class LevelState extends GameState {
 	private static final int PLAYER_1 = 0;
 	private static final int PLAYER_2 = 1;
+	private static final int STOCK_LEVEL = 0;
+	private static final int TIMED_LEVEL = 1;
 	private Game myGame;
 	private InputListener myInputs;
 	private Character myPlayer;
 	private Character myEnemy;
 	private Text myPlayerText;
 	private Text myEnemyText;
+	private Text myTimerText;
 	private Text myInputsText;
-    // TODO: add my
-	private Scene myScene;
 	private Group myRoot;
-	private SpriteTransition myBackgroundAnimation;
-	double width;
-	double height;
+	double mySceneWidth;
+	double mySceneHeight;
 	private int myFrameCount;
+	private int myLevelType;
+	private int myTimer = 100;
 
     private InputTree myMoveTree;
 	
-	public LevelState (Game g) {
+	public LevelState (Game g, int type) {
 		myGame = g;
-		myScene = myGame.getMyScene();
+		
+		myLevelType = type;
 		myRoot = myGame.getMyRoot();
 		myInputs = myGame.getMyInputManager();
 		myInputs.getPlayerKeyCombo().clear();
 		
 		myFrameCount = 0;
 		myRoot.getChildren().clear();
-		width = myScene.getWidth();
-		height = myScene.getHeight();
+		Scene scene = myGame.getMyScene();
+		mySceneWidth = scene.getWidth();
+		mySceneHeight = scene.getHeight();
 		
+		createBackground();
+		createPlayer();
+		createEnemy();
+        createCharacterTexts();
+        createInputsText();
+		createMoveTree();
+		if (myLevelType == TIMED_LEVEL) {
+			createTimerText();
+		}
+    	
+	}
+
+	private void createTimerText() {
+		// TODO Auto-generated method stub
+		myTimerText = new Text();
+        myTimerText.setFont(new Font("Courier", 100));
+        myTimerText.setX(320);
+        myTimerText.setY(100);
+        myTimerText.setStroke(Color.RED);
+        myRoot.getChildren().add(myTimerText);
+	}
+
+	private void createMoveTree() {
+		myMoveTree = new InputTree();
+    	myMoveTree.addMove(new String[]{"LIGHT", "FORWARD", "DOWN"}, "QCFL");
+    	myMoveTree.addMove(new String[]{"LIGHT", "BACKWARD"}, "BL");
+    	myMoveTree.addMove(new String[]{"MEDIUM", "FORWARD","DOWN"}, "QCFM");
+    	myMoveTree.addMove(new String[]{"HARD", "FORWARD", "DOWN"}, "QCFH");
+    	myMoveTree.addMove(new String[]{"LIGHT"}, "L");
+    	myMoveTree.addMove(new String[]{"MEDIUM"}, "M");
+    	myMoveTree.addMove(new String[]{"HARD"}, "H");
+	}
+
+	private void createEnemy() {
+		Image image = new Image(getClass().getClassLoader().getResourceAsStream("spritesheet2.gif"));
+		ImageView enemyImageView = new ImageView(image);
+		enemyImageView.setViewport(new Rectangle2D(221, 0, 50, 85));
+		myRoot.getChildren().add(enemyImageView);
+        
+		enemyImageView.setTranslateX(mySceneWidth/2 + 150);
+		enemyImageView.setTranslateY(mySceneHeight/2+45);
+        myEnemy = new Character(myGame, false, enemyImageView, PLAYER_2);
+	}
+
+	private void createPlayer() {
+		Image image = new Image(getClass().getClassLoader().getResourceAsStream("spritesheet.gif"));
+		ImageView playerImageView = new ImageView(image);
+		playerImageView.setViewport(new Rectangle2D(277, 0, 50, 85));
+		myRoot.getChildren().add(playerImageView);
+
+		playerImageView.setTranslateX(mySceneWidth/2 - 200);
+		playerImageView.setTranslateY(mySceneHeight/2+45);
+        myPlayer = new Character(myGame, true, playerImageView, PLAYER_1);
+	}
+
+	private void createBackground() {
 		Image image = new Image(getClass().getClassLoader().getResourceAsStream("backgroundSprite.png"));
 		ImageView background = new ImageView(image);
 		background.setViewport(new Rectangle2D(0,0,800,336));
 		myRoot.getChildren().add(background);
-		myBackgroundAnimation = new SpriteTransition(background, 
+		SpriteTransition backgroundAnimation = new SpriteTransition(background, 
 				Duration.millis(1000), 0, 0, 0, new int[]{800,800,800,800,800,800,800,800}, 
 				new int[]{336,336,336,336,336,336,336,336}, true);
-		myBackgroundAnimation.setCycleCount(Animation.INDEFINITE);
-		myBackgroundAnimation.play();
-		
-        myPlayerText = new Text();
+		backgroundAnimation.setCycleCount(Animation.INDEFINITE);
+		backgroundAnimation.play();
+	}
+
+	private void createCharacterTexts() {
+		myPlayerText = new Text();
         myPlayerText.setFont(new Font("Courier", 100));
         myPlayerText.setX(100);
         myPlayerText.setY(100);
         myRoot.getChildren().add(myPlayerText);
         myEnemyText = new Text();
         myEnemyText.setFont(new Font("Courier", 100));
-        myEnemyText.setX(500);
+        myEnemyText.setX(550);
         myEnemyText.setY(100);
         myRoot.getChildren().add(myEnemyText);
-        
-        image = new Image(getClass().getClassLoader().getResourceAsStream("spritesheet.gif"));
-		ImageView playerImageView = new ImageView(image);
-		playerImageView.setViewport(new Rectangle2D(277, 0, 50, 85));
-		myGame.getMyRoot().getChildren().add(playerImageView);
-		
-		image = new Image(getClass().getClassLoader().getResourceAsStream("spritesheet2.gif"));
-		ImageView enemyImageView = new ImageView(image);
-		enemyImageView.setViewport(new Rectangle2D(221, 0, 50, 85));
-		myGame.getMyRoot().getChildren().add(enemyImageView);
-        
-		// TODO: set groundlevel
-		playerImageView.setTranslateX(width/2 - 200);
-		playerImageView.setTranslateY(height/2+45);
-		enemyImageView.setTranslateX(width/2 + 150);
-		enemyImageView.setTranslateY(height/2+45);
-		
-        myPlayer = new Character(myGame, true, playerImageView, PLAYER_1);
-        myEnemy = new Character(myGame, false, enemyImageView, PLAYER_2);
-        
-		//myRoot.getChildren().add(playerImage);
-        //myRoot.getChildren().add(enemyImage);
-		
+
         myPlayerText.setText(""+myPlayer.getHealth());
         myEnemyText.setText(""+myEnemy.getHealth());
-        
-        myInputsText = new Text();
+        myPlayerText.setStroke(Color.WHITE);
+        myEnemyText.setStroke(Color.WHITE);
+	}
+
+	private void createInputsText() {
+		myInputsText = new Text();
         myInputsText.setX(50);
-        myInputsText.setY(200);
+        myInputsText.setY(150);
+        myInputsText.setStroke(Color.WHITE);
         myRoot.getChildren().add(myInputsText);
         myInputsText.setVisible(false);
-        
-		myMoveTree = new InputTree();
-		String[] codes = {"LIGHT", "FORWARD", "DOWN"};
-    	String[] codes2 = {"LIGHT", "BACKWARD"};
-//    	LinkedList<String> inputCodes = new LinkedList<String>();
-//    	inputCodes.add(KeyCode.DOWN.toString());
-//    	inputCodes.add("FORWARD");
-//    	inputCodes.add(KeyCode.A.toString());
-    	myMoveTree.addMove(codes, "QCFL");
-    	myMoveTree.addMove(codes2, "BL");
-    	codes = new String[]{"MEDIUM", "FORWARD","DOWN"};
-    	myMoveTree.addMove(codes, "QCFM");
-    	codes = new String[]{"HARD", "FORWARD", "DOWN"};
-    	myMoveTree.addMove(codes, "QCFH");
-    	myMoveTree.addMove(new String[]{"LIGHT"}, "L");
-    	myMoveTree.addMove(new String[]{"MEDIUM"}, "M");
-    	myMoveTree.addMove(new String[]{"HARD"}, "H");
-//    	codes = new String[]{"FORWARD"};
-//    	moveTree.addMove(codes, "F");
-//    	moveTree.printTree(moveTree.myRoot);
-//    	System.out.println("");
-//    	System.out.println(moveTree.parseInput(inputCodes));
-    	
 	}
 	
 	@Override
@@ -131,20 +152,25 @@ public class LevelState extends GameState {
 		handleCollision(myEnemy, myPlayer);
 		
 		myInputsText.setText(myInputs.getPlayerKeyCombo().toString());
-    	// TODO: enemy hitboxes
-		checkDeath(myPlayer);
-		checkDeath(myEnemy);
+		if (myLevelType == STOCK_LEVEL) {
+			checkDeath(myPlayer);
+			checkDeath(myEnemy);
+		}
 		
-//        if (!myEnemy.getInAir()) {
-//        	myEnemy.executeAction("U");
-//        }
-        
         doCharacterAction(myPlayer);
         doCharacterAction(myEnemy);
         if (myInputs.isEnterPressed()) {
         	myInputsText.setVisible(!myInputsText.isVisible());
         }
-        
+        if (myInputs.isSpacePressed()) {
+        	myPlayer.setHealth(100);
+        	myEnemy.setHealth(100);
+        	myPlayerText.setText(""+myPlayer.getHealth());
+        	myEnemyText.setText(""+myEnemy.getHealth());
+        }
+        if (myLevelType == TIMED_LEVEL) {
+        	updateTimer();
+        }
         if (myFrameCount == 30) {
             myGame.getMyInputManager().discardInputsFromBoth();
         }
@@ -153,6 +179,23 @@ public class LevelState extends GameState {
         	myFrameCount = 0;
         }
 	}
+	private void updateTimer() {
+		// TODO Auto-generated method stub
+		if (myFrameCount == 30) {
+			myTimer--;
+		}
+		myTimerText.setText(""+myTimer);
+		if (myTimer <= 0) {
+			winByTime();
+		}
+	}
+
+	private void winByTime() {
+		if (myPlayer.getHealth() > myEnemy.getHealth()) {
+			setLoss(myEnemy);
+		} else setLoss(myPlayer);
+	}
+
 	private void checkDeath(Character character) {
 		if (character.getHealth() <= 0) {
 			if (character.getMyID() == PLAYER_1) {
@@ -161,8 +204,7 @@ public class LevelState extends GameState {
 			if (character.getMyID() == PLAYER_2) {
 				myEnemyText.setText("KO");
 			}
-			myInputs.discardInputsFromBoth();
-			myGame.changeState(new VictoryState(myGame, character.getMyID()));
+			setLoss(character);
 		}
 	}
 	private void handleOrientation() {
@@ -200,7 +242,7 @@ public class LevelState extends GameState {
 			ImageView fireballImage = f.getMyImage();
     		double cx = c.getCenterX();
     		double cr = c.getRadius();
-    		if (cx - cr < 0 || cx + cr > myScene.getWidth()) {
+    		if (cx - cr < 0 || cx + cr > mySceneWidth) {
     			myRoot.getChildren().removeAll(c, fireballImage);
     		}
     		if (c.getBoundsInParent().intersects(victim.getMyImage().getBoundsInParent())) {
@@ -227,9 +269,6 @@ public class LevelState extends GameState {
 		boolean left;
 		boolean back;
 		boolean front;
-		boolean light;
-		boolean medium;
-		boolean hard;
 		ImageView hurtbox = character.getMyImage();
 		LinkedList<String> inputCodes;
 		if (character.getMyID() == PLAYER_1) {
@@ -240,9 +279,6 @@ public class LevelState extends GameState {
 			front = myInputs.isPlayerForwardPressed();
 			back = myInputs.isPlayerBackwardPressed();
 			inputCodes = myInputs.getPlayerKeyCombo();
-			light = myInputs.isfPressed();
-			medium = myInputs.isgPressed();
-			hard = myInputs.ishPressed();
 		} else if (character.getMyID() == PLAYER_2) {
 			up = myInputs.isUpPressed();
 			right = myInputs.isRightPressed();
@@ -251,16 +287,12 @@ public class LevelState extends GameState {
 			front = myInputs.isEnemyForwardPressed();
 			back = myInputs.isEnemyBackwardPressed();
 			inputCodes = myInputs.getEnemyKeyCombo();
-			light = myInputs.isiPressed();
-			medium = myInputs.isoPressed();
-			hard = myInputs.ispPressed();
 		} else {
 			return;
 		}
 		if (!character.getInAir() && !character.getAttacking()) {
 
         	String instruction = myMoveTree.parseInput(inputCodes);
-        	//System.out.println(instruction);
         	if (instruction != null) {
         		inputCodes.clear();
         		character.executeAction(instruction);
@@ -276,7 +308,7 @@ public class LevelState extends GameState {
         			(down && back)) {
         		character.executeAction("D");
         	} else if (right) {
-        		if (hurtbox.getBoundsInParent().getMaxX() < width) {
+        		if (hurtbox.getBoundsInParent().getMaxX() < mySceneWidth) {
         			hurtbox.setX(hurtbox.getX()+ 2);
         		}
         		if (front) {
@@ -296,5 +328,8 @@ public class LevelState extends GameState {
         	}
         }
 	}
-
+	private void setLoss(Character character) {
+		myInputs.discardInputsFromBoth();
+		myGame.changeState(new VictoryState(myGame, character.getMyID()));
+	}
 }

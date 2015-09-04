@@ -24,33 +24,14 @@ class Game {
     public Group getMyRoot() {
 		return myRoot;
 	}
-
-	public void setMyRoot(Group myRoot) {
-		this.myRoot = myRoot;
-	}
-
 	public Scene getMyScene() {
 		return myScene;
 	}
-
-	public void setMyScene(Scene myScene) {
-		this.myScene = myScene;
-	}
-
 	public GameState getCurrentState() {
 		return myCurrentState;
 	}
-
-	public void setCurrentState(GameState currentState) {
-		this.myCurrentState = currentState;
-	}
-
 	public InputListener getMyInputManager() {
 		return myInputManager;
-	}
-
-	public void setMyInputManager(InputListener myInputManager) {
-		this.myInputManager = myInputManager;
 	}
 
 	/**
@@ -81,7 +62,7 @@ class Game {
     }
     
     public void changeState (GameState newState) {
-    	setCurrentState(newState);
+    	this.myCurrentState = newState;
     }
     
 }

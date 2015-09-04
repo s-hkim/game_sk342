@@ -8,8 +8,6 @@ import javafx.util.Duration;
 /**
  * This is the main program, it is basically boilerplate to create
  * an animated scene.
- * 
- * TEMP
  */
 public class Main extends Application {
     public static final int SIZE_X = 800;

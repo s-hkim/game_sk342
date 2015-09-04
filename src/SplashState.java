@@ -27,8 +27,11 @@ public class SplashState extends GameState {
 		myGame.getMyRoot().getChildren().add(backgroundOverlay);
 	}
 	public void update(){
-		if (myInputManager.checkKeyCombos()) {
-			myGame.changeState(new LevelState(myGame));
+		if (myInputManager.isfPressed()) {
+			myGame.changeState(new LevelState(myGame, 0));
+		}
+		else if (myInputManager.isgPressed()) {
+			myGame.changeState(new LevelState(myGame, 1));
 		}
 		myInputManager.discardInputsFromBoth();
 	}

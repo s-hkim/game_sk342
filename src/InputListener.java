@@ -5,6 +5,7 @@ import javafx.scene.input.KeyEvent;
 
 public class InputListener {
 	private boolean enterPressed;
+	private boolean spacePressed;
 	
 	private boolean playerForwardPressed;
 	private boolean playerBackwardPressed;
@@ -34,196 +35,91 @@ public class InputListener {
 	public boolean isEnterPressed() {
 		return enterPressed;
 	}
-
-	public void setEnterPressed(boolean enterPressed) {
-		this.enterPressed = enterPressed;
+	public boolean isSpacePressed() {
+		return spacePressed;
 	}
-
 	public boolean isUpPressed() {
 		return upPressed;
 	}
-
-	public void setUpPressed(boolean upPressed) {
-		this.upPressed = upPressed;
-	}
-
 	public boolean isDownPressed() {
 		return downPressed;
 	}
-
-	public void setDownPressed(boolean downPressed) {
-		this.downPressed = downPressed;
-	}
-
 	public boolean isRightPressed() {
 		return rightPressed;
 	}
-
-	public void setRightPressed(boolean rightPressed) {
-		this.rightPressed = rightPressed;
-	}
-
 	public boolean isLeftPressed() {
 		return leftPressed;
 	}
-
-	public void setLeftPressed(boolean leftPressed) {
-		this.leftPressed = leftPressed;
-	}
-
 	public boolean isForwardPressed() {
 		return playerForwardPressed;
 	}
-
-	public void setForwardPressed(boolean forwardPressed) {
-		this.playerForwardPressed = forwardPressed;
-	}
-
 	public boolean isBackwardPressed() {
 		return playerBackwardPressed;
 	}
-
-	public void setBackwardPressed(boolean backwardPressed) {
-		this.playerBackwardPressed = backwardPressed;
-	}
-
 	public boolean isaPressed() {
 		return aPressed;
 	}
-
-	public void setaPressed(boolean aPressed) {
-		this.aPressed = aPressed;
-	}
-
 	public boolean issPressed() {
 		return sPressed;
 	}
-
-	public void setsPressed(boolean sPressed) {
-		this.sPressed = sPressed;
-	}
-
 	public boolean isdPressed() {
 		return dPressed;
-	}
-
-	public void setdPressed(boolean dPressed) {
-		this.dPressed = dPressed;
 	}
 	public boolean isPlayerForwardPressed() {
 		return playerForwardPressed;
 	}
-
-	public void setPlayerForwardPressed(boolean playerForwardPressed) {
-		this.playerForwardPressed = playerForwardPressed;
-	}
-
 	public boolean isPlayerBackwardPressed() {
 		return playerBackwardPressed;
 	}
-
-	public void setPlayerBackwardPressed(boolean playerBackwardPressed) {
-		this.playerBackwardPressed = playerBackwardPressed;
-	}
-
 	public boolean iswPressed() {
 		return wPressed;
 	}
-
-	public void setwPressed(boolean wPressed) {
-		this.wPressed = wPressed;
-	}
-
 	public boolean isfPressed() {
 		return fPressed;
 	}
-
-	public void setfPressed(boolean fPressed) {
-		this.fPressed = fPressed;
-	}
-
 	public boolean isgPressed() {
 		return gPressed;
 	}
-
-	public void setgPressed(boolean gPressed) {
-		this.gPressed = gPressed;
-	}
-
 	public boolean ishPressed() {
 		return hPressed;
 	}
-
-	public void sethPressed(boolean hPressed) {
-		this.hPressed = hPressed;
-	}
-
 	public boolean isEnemyForwardPressed() {
 		return enemyForwardPressed;
 	}
-
-	public void setEnemyForwardPressed(boolean enemyForwardPressed) {
-		this.enemyForwardPressed = enemyForwardPressed;
-	}
-
 	public boolean isEnemyBackwardPressed() {
 		return enemyBackwardPressed;
 	}
-
-	public void setEnemyBackwardPressed(boolean enemyBackwardPressed) {
-		this.enemyBackwardPressed = enemyBackwardPressed;
-	}
-
 	public boolean isiPressed() {
 		return iPressed;
 	}
-
-	public void setiPressed(boolean iPressed) {
-		this.iPressed = iPressed;
-	}
-
 	public boolean isoPressed() {
 		return oPressed;
 	}
-
-	public void setoPressed(boolean oPressed) {
-		this.oPressed = oPressed;
-	}
-
 	public boolean ispPressed() {
 		return pPressed;
 	}
-
-	public void setpPressed(boolean pPressed) {
-		this.pPressed = pPressed;
-	}
-
 	public LinkedList<String> getPlayerKeyCombo() {
 		return playerKeyCombo;
 	}
-
-	public void setPlayerKeyCombo(LinkedList<String> playerKeyCombo) {
-		this.playerKeyCombo = playerKeyCombo;
-	}
-
 	public LinkedList<String> getEnemyKeyCombo() {
 		return enemyKeyCombo;
 	}
-
-	public void setEnemyKeyCombo(LinkedList<String> enemyKeyCombo) {
-		this.enemyKeyCombo = enemyKeyCombo;
-	}
-
-	public boolean isLeft() {
+	public boolean isPlayerLeft() {
 		return playerLeft;
 	}
-
-	public void setLeft(boolean left) {
-		this.playerLeft = left;
+	public void setPlayerLeft (boolean l) {
+		playerLeft = l;
+	}
+	public boolean isEnemyLeft() {
+		return enemyLeft;
+	}
+	public void setEnemyLeft(boolean enemyLeft) {
+		this.enemyLeft = enemyLeft;
 	}
 
 	public InputListener () {
 		enterPressed = false;
+		spacePressed = false;
 		
 		enemyForwardPressed = false;
 		enemyBackwardPressed = false;
@@ -252,6 +148,9 @@ public class InputListener {
 		KeyCode code = ke.getCode();
 		if (code == KeyCode.ENTER) {
 			enterPressed = true;
+		}
+		if (code == KeyCode.SPACE) {
+			spacePressed = true;
 		}
 		if (code == KeyCode.UP) {
 			upPressed = true;
@@ -324,17 +223,19 @@ public class InputListener {
 			playerKeyCombo.addLast("HARD");
 		}
 		if (playerKeyCombo.size() > 10) {
-			discardInput(playerKeyCombo);
+			discardInputFromPlayer(playerKeyCombo);
 		}
 		if (enemyKeyCombo.size() > 10) {
-			discardInput(enemyKeyCombo);
+			discardInputFromPlayer(enemyKeyCombo);
 		}
 	}
-	// TODO: update
 	public void keyReleased(KeyEvent ke) {
 		KeyCode code = ke.getCode();
 		if (code == KeyCode.ENTER) {
 			enterPressed = false;
+		}
+		if (code == KeyCode.SPACE) {
+			spacePressed = false;
 		}
 		if (code == KeyCode.UP) {
 			upPressed = false;
@@ -390,20 +291,8 @@ public class InputListener {
 			hPressed = false;
 		}
 	}
-	public boolean isPlayerLeft() {
-		return playerLeft;
-	}
-	public void setPlayerLeft (boolean l) {
-		playerLeft = l;
-	}
-	public boolean isEnemyLeft() {
-		return enemyLeft;
-	}
-	public void setEnemyLeft(boolean enemyLeft) {
-		this.enemyLeft = enemyLeft;
-	}
 
-	public void discardInput(LinkedList<String> keyCombo) {
+	public void discardInputFromPlayer(LinkedList<String> keyCombo) {
 		keyCombo.pollFirst();
 	}
 	public void discardInputsFromBoth() {
@@ -413,5 +302,4 @@ public class InputListener {
 	public boolean checkKeyCombos() {
 		return !playerKeyCombo.isEmpty() || !enemyKeyCombo.isEmpty();
 	}
-
 }
