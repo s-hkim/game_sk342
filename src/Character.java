@@ -14,10 +14,9 @@ import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 public class Character{
-	private int myID;
-	
-	private Game myGame;
 	private static final int SPRITE_CENTER = 274;
+	private int myID;
+	private Game myGame;
 	private ImageView myImage;
 	private Timeline myJumpingPhysics;
 	private SpriteTransition myIdle;
@@ -27,13 +26,13 @@ public class Character{
 	private Timeline myWalkingBackward;
 	private Timeline myCrouching;
 	private ArrayList<Fireball> myHitboxes;
-	private boolean myLeft;
+	private boolean myIsLeft;
 	private int myHealth;
 	
 	public Character(Game g, boolean l, ImageView i, int id) {
 		this.myGame = g;
 		this.myHitboxes = new ArrayList<Fireball>();
-		this.myLeft = l;
+		this.myIsLeft = l;
 		this.myHealth = 100;
 		this.myImage = i;
 		this.myID = id;
@@ -49,7 +48,7 @@ public class Character{
 		myCrouching.getKeyFrames().add(new KeyFrame(Duration.millis(1000/60),
 				new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
-				if (myLeft){
+				if (myIsLeft){
 					myImage.setViewport(new Rectangle2D(330, 423, 48, 80));
 				} else {
 					myImage.setViewport(new Rectangle2D(274 - 56 - 48, 423, 48, 80));
@@ -69,7 +68,7 @@ public class Character{
 		myWalkingBackward.getKeyFrames().add(new KeyFrame(Duration.millis(1000/60),
 				new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
-				if (myLeft){
+				if (myIsLeft){
 					myImage.setViewport(new Rectangle2D(279, 423, 48, 80));
 				} else {
 					myImage.setViewport(new Rectangle2D(221, 423, 48, 80));
@@ -87,7 +86,7 @@ public class Character{
 	private void animateWalkingForward() {
 		myWalkingForward = new SpriteTransition(myImage, Duration.millis(500), 
 				SPRITE_CENTER, 5, 1070, 
-				new int[]{48,48,48,48}, new int[] {85,85,85,85}, myLeft);
+				new int[]{48,48,48,48}, new int[] {85,85,85,85}, myIsLeft);
 		myWalkingForward.setCycleCount(1);
 		myWalkingForward.setOnFinished(new EventHandler<ActionEvent>(){
 			@Override
@@ -139,7 +138,6 @@ public class Character{
 		}
 	}
 	private void createHitbox(int damage, int cycleCount) {
-		// TODO Auto-generated method stub
 		Bounds bounds = myImage.getBoundsInParent();
 		Circle hitbox = new Circle(bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight()/2,
 				bounds.getWidth()/2);
@@ -164,7 +162,7 @@ public class Character{
 	private void lHit() {
 		stopAnimation();
 		myAttack = new SpriteTransition(myImage, Duration.millis(500), 
-				SPRITE_CENTER, 3, 87, new int[]{0,49,63,55,75}, new int[]{0,85,85,85,85}, myLeft);
+				SPRITE_CENTER, 3, 87, new int[]{0,49,63,55,75}, new int[]{0,85,85,85,85}, myIsLeft);
 		myAttack.setCycleCount(1);
 		myAttack.setOnFinished(new EventHandler<ActionEvent>(){
 			@Override
@@ -178,7 +176,7 @@ public class Character{
 	private void mHit() {
 		stopAnimation();
 		myAttack = new SpriteTransition(myImage, Duration.millis(500), 
-				SPRITE_CENTER, 3, 174, new int[]{0,46,76}, new int[]{85,85,85}, myLeft);
+				SPRITE_CENTER, 3, 174, new int[]{0,46,76}, new int[]{85,85,85}, myIsLeft);
 		myAttack.setCycleCount(1);
 		myAttack.setOnFinished(new EventHandler<ActionEvent>(){
 			@Override
@@ -192,7 +190,7 @@ public class Character{
 	private void hHit() {
 		stopAnimation();
 		myAttack = new SpriteTransition(myImage, Duration.millis(750), 
-				SPRITE_CENTER, 1, 1152, new int[]{0,49,56,50,48,70}, new int[]{85,85,85,85,85,85}, myLeft);
+				SPRITE_CENTER, 1, 1152, new int[]{0,49,56,50,48,70}, new int[]{85,85,85,85,85,85}, myIsLeft);
 		myAttack.setCycleCount(1);
 		myAttack.setOnFinished(new EventHandler<ActionEvent>(){
 			@Override
@@ -207,7 +205,7 @@ public class Character{
 	public void animateHit() {
 		stopAnimation();
 		myAttack = new SpriteTransition(myImage, Duration.millis(300), 
-				SPRITE_CENTER, 2, 1966, new int[]{0,47,50,52,48}, new int[]{78,78,78,78,78}, myLeft);
+				SPRITE_CENTER, 2, 1966, new int[]{0,47,50,52,48}, new int[]{78,78,78,78,78}, myIsLeft);
 		myAttack.setCycleCount(1);
 		myAttack.setOnFinished(new EventHandler<ActionEvent>(){
 			@Override
@@ -247,7 +245,7 @@ public class Character{
 	
 	public void shootFireball(int radius, int speed, int duration, int damage) {
 		int direction;
-		if (myLeft) {
+		if (myIsLeft) {
 			direction = 1;
 		} else {
 			direction = -1;
@@ -258,12 +256,12 @@ public class Character{
 		circle.setFill(Color.RED);
 		Image image = new Image(getClass().getClassLoader().getResourceAsStream("fireball.png"));
 		ImageView imageView = new ImageView(image);
-		if (!myLeft) imageView.setScaleX(-1);
+		if (!myIsLeft) imageView.setScaleX(-1);
 		myGame.getMyRoot().getChildren().add(imageView);
 		Timeline tl = new Timeline();
 		tl.setCycleCount(duration);
 		KeyFrame move;
-		if (myLeft) {
+		if (myIsLeft) {
 			move = new KeyFrame(Duration.millis(1000/60),
 					new EventHandler<ActionEvent>() {
 				public void handle(ActionEvent event) {
@@ -300,7 +298,7 @@ public class Character{
 	public void shootH() {
 		// TODO: merge this with shootFireball
 		int direction;
-		if (myLeft) {
+		if (myIsLeft) {
 			direction = 1;
 		} else {
 			direction = -1;
@@ -311,12 +309,12 @@ public class Character{
 		circle.setFill(Color.RED);
 		Image image = new Image(getClass().getClassLoader().getResourceAsStream("fireball.png"));
 		ImageView imageView = new ImageView(image);
-		if (!myLeft) imageView.setScaleX(-1);
+		if (!myIsLeft) imageView.setScaleX(-1);
 		myGame.getMyRoot().getChildren().add(imageView);
 		Timeline tl = new Timeline();
 		tl.setCycleCount(Animation.INDEFINITE);
 		KeyFrame move;
-		if (myLeft) {
+		if (myIsLeft) {
 			move = new KeyFrame(Duration.millis(1000/60),
 					new EventHandler<ActionEvent>() {
 				public void handle(ActionEvent event) {
@@ -344,39 +342,13 @@ public class Character{
 		fireballAnimation(Duration.millis(500), fireball);
 	}
 	
-	public ImageView getMyImage() {
-		return myImage;
-	}
-	public ArrayList<Fireball> getHitboxes() {
-		return myHitboxes;
-	}
-	public boolean getBlocking() {
-		return myWalkingBackward.getStatus() == Animation.Status.RUNNING;
-	}
-	public boolean getOrientation() {
-		return myLeft;
-	}
-	public void setOrientation(boolean a) {
-		myLeft = a;
-	}
-	public int getHealth() {
-		return myHealth;
-	}
-	public void setHealth(int i) {
-		myHealth = i;
-	}
-	public int getMyID() {
-		return myID;
-	}
-	public void inflictDamage(int d) {
-		myHealth = myHealth - d;
-	}
+	
 	
 	private void animateIdle () {
 		stopAnimation();
 		
 		SpriteTransition sprite = new SpriteTransition(myImage, Duration.millis(1000), 
-				SPRITE_CENTER,	3, 0,	new int[]{48,48,48}, new int[]{85,85,85}, myLeft);
+				SPRITE_CENTER,	3, 0,	new int[]{48,48,48}, new int[]{85,85,85}, myIsLeft);
 		sprite.setCycleCount(Animation.INDEFINITE);
 		myIdle = sprite;
 		myIdle.play();
@@ -398,7 +370,7 @@ public class Character{
 	private void fireballAnimation(Duration d, Fireball fireball) {
 		stopAnimation();
 		SpriteTransition sprite = new SpriteTransition(myImage, d, SPRITE_CENTER,
-				5, 2298, new int[]{54,58,65,74}, new int[] {81,81,81,81},myLeft);
+				5, 2298, new int[]{54,58,65,74}, new int[] {81,81,81,81},myIsLeft);
 		sprite.setCycleCount(1);
 		sprite.setOnFinished(new EventHandler<ActionEvent>(){
 
@@ -418,7 +390,7 @@ public class Character{
 		stopAnimation();
 		SpriteTransition sprite = new SpriteTransition(myImage, Duration.millis(47*1000/60), 
 				SPRITE_CENTER, 5, 902, 
-				new int[]{45,45,45,45}, new int[] {100,100,100,100},myLeft);
+				new int[]{45,45,45,45}, new int[] {100,100,100,100},myIsLeft);
 		sprite.setCycleCount(1);
 		sprite.setOnFinished(new EventHandler<ActionEvent>(){
 
@@ -436,7 +408,7 @@ public class Character{
 		myJumpingPhysics.stop();
 		myWalkingBackward.stop();
 		myCrouching.stop();
-		if (myWalkingForward.isLeft() != myLeft) {
+		if (myWalkingForward.getIsLeft() != myIsLeft) {
 			animateWalkingForward();
 		}
 		myWalkingForward.play();
@@ -463,5 +435,32 @@ public class Character{
 			return false;
 		}
 		return myAttack.getStatus() == Animation.Status.RUNNING;
+	}
+	public ImageView getMyImage() {
+		return myImage;
+	}
+	public ArrayList<Fireball> getHitboxes() {
+		return myHitboxes;
+	}
+	public boolean getBlocking() {
+		return myWalkingBackward.getStatus() == Animation.Status.RUNNING;
+	}
+	public boolean getOrientation() {
+		return myIsLeft;
+	}
+	public void setOrientation(boolean a) {
+		myIsLeft = a;
+	}
+	public int getHealth() {
+		return myHealth;
+	}
+	public void setHealth(int i) {
+		myHealth = i;
+	}
+	public int getMyID() {
+		return myID;
+	}
+	public void inflictDamage(int d) {
+		myHealth = myHealth - d;
 	}
 }

@@ -29,8 +29,8 @@ public class InputListener {
 	
 	private LinkedList<String> playerKeyCombo;
 	private LinkedList<String> enemyKeyCombo;
-	private boolean playerLeft = true;
-	private boolean enemyLeft = false;
+	private boolean playerIsLeft = true;
+	private boolean enemyIsLeft = false;
 	
 	public boolean isEnterPressed() {
 		return enterPressed;
@@ -105,16 +105,16 @@ public class InputListener {
 		return enemyKeyCombo;
 	}
 	public boolean isPlayerLeft() {
-		return playerLeft;
+		return playerIsLeft;
 	}
 	public void setPlayerLeft (boolean l) {
-		playerLeft = l;
+		playerIsLeft = l;
 	}
 	public boolean isEnemyLeft() {
-		return enemyLeft;
+		return enemyIsLeft;
 	}
 	public void setEnemyLeft(boolean enemyLeft) {
-		this.enemyLeft = enemyLeft;
+		this.enemyIsLeft = enemyLeft;
 	}
 
 	public InputListener () {
@@ -160,7 +160,7 @@ public class InputListener {
 			enemyKeyCombo.addLast("DOWN");
 		} if (code == KeyCode.RIGHT) {
 			rightPressed = true;
-			if (enemyLeft) {
+			if (enemyIsLeft) {
 				enemyForwardPressed = true;
 				enemyKeyCombo.addLast("FORWARD");
 			} else {
@@ -169,7 +169,7 @@ public class InputListener {
 			}
 		} if (code == KeyCode.LEFT) {
 			leftPressed = true;
-			if (enemyLeft) {
+			if (enemyIsLeft) {
 				enemyBackwardPressed = true;
 				enemyKeyCombo.addLast("BACKWARD");
 			} else {
@@ -193,7 +193,7 @@ public class InputListener {
 			playerKeyCombo.addLast("UP");
 		} if (code == KeyCode.A) {
 			aPressed = true;
-			if (playerLeft) {
+			if (playerIsLeft) {
 				playerBackwardPressed = true;
 				playerKeyCombo.addLast("BACKWARD");
 			} else {
@@ -205,7 +205,7 @@ public class InputListener {
 			playerKeyCombo.addLast("DOWN");
 		} if (code == KeyCode.D) {
 			dPressed = true;
-			if (playerLeft) {
+			if (playerIsLeft) {
 				playerForwardPressed = true;
 				playerKeyCombo.addLast("FORWARD");
 			} else {
@@ -243,14 +243,14 @@ public class InputListener {
 			downPressed = false;
 		} if (code == KeyCode.RIGHT) {
 			rightPressed = false;
-			if (enemyLeft) {
+			if (enemyIsLeft) {
 				enemyForwardPressed = false;
 			} else {
 				enemyBackwardPressed = false;
 			}
 		} if (code == KeyCode.LEFT) {
 			leftPressed = false;
-			if (enemyLeft) {
+			if (enemyIsLeft) {
 				enemyBackwardPressed = false;
 			} else {
 				enemyForwardPressed = false;
@@ -268,7 +268,7 @@ public class InputListener {
 			wPressed = false;
 		} if (code == KeyCode.A) {
 			aPressed = false;
-			if (playerLeft) {
+			if (playerIsLeft) {
 				playerBackwardPressed = false;
 			} else {
 				playerForwardPressed = false;
@@ -277,7 +277,7 @@ public class InputListener {
 			sPressed = false;
 		} if (code == KeyCode.D) {
 			dPressed = false;
-			if (playerLeft) {
+			if (playerIsLeft) {
 				playerForwardPressed = false;
 			} else {
 				playerBackwardPressed = false;

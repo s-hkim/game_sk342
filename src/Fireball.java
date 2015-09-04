@@ -7,34 +7,7 @@ public class Fireball{
 	private Circle myHitbox;
 	private ImageView myImage;
 	private int myDamage;
-	public ImageView getMyImage() {
-		return myImage;
-	}
 	private Timeline myTimeline;
-	public Character getMyOrigin() {
-		return myOrigin;
-	}
-	public void setMyOrigin(Character myOrigin) {
-		this.myOrigin = myOrigin;
-	}
-	public Circle getMyHitbox() {
-		return myHitbox;
-	}
-	public void setMyHitbox(Circle myHitbox) {
-		this.myHitbox = myHitbox;
-	}
-	public int getMyDamage() {
-		return myDamage;
-	}
-	public void setMyDamage(int myDamage) {
-		this.myDamage = myDamage;
-	}
-	public Timeline getMyTimeline() {
-		return myTimeline;
-	}
-	public void setMyTimeline(Timeline myTimeline) {
-		this.myTimeline = myTimeline;
-	}
 	
 	public Fireball (Character o, Circle h, Timeline tl, int d, ImageView imageView) {
 		myImage = imageView;
@@ -55,5 +28,19 @@ public class Fireball{
 		myImage.setX(centerX - myImage.getBoundsInParent().getWidth()/2);
 		myImage.setY(centerY - myImage.getBoundsInParent().getHeight()/2);
 	}
-
+	public Character getMyOrigin() {
+		return myOrigin;
+	}
+	public ImageView getMyImage() {
+		return myImage;
+	}
+	public Circle getMyHitbox() {
+		return myHitbox;
+	}
+	public int getMyDamage() {
+		return myDamage;
+	}
+	public Timeline getMyTimeline() {
+		return myTimeline;
+	}
 }

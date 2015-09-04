@@ -2,11 +2,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 
-/**
- * Separate the game code from some of the boilerplate code.
- * 
- * TEMP
- */
 class Game {
     private static final String TITLE = "Mediocre Road Warrior";
     private Group myRoot;
@@ -14,13 +9,9 @@ class Game {
     private GameState myCurrentState;
     private InputListener myInputManager;
     
-    /**
-     * Returns name of the game.
-     */
     public String getTitle () {
         return TITLE;
     }
-
     public Group getMyRoot() {
 		return myRoot;
 	}
@@ -34,9 +25,6 @@ class Game {
 		return myInputManager;
 	}
 
-	/**
-     * Create the game's scene
-     */
     public Scene init (int width, int height) {
     	myInputManager = new InputListener();
         // Create a scene graph to organize the scene
@@ -51,12 +39,6 @@ class Game {
         return myScene;
     }
     
-    /**
-     * Change properties of shapes to animate them
-     * 
-     * Note, there are more sophisticated ways to animate shapes,
-     * but these simple ways work too.
-     */
     public void step (double elapsedTime) {
     	myCurrentState.update();    	
     }

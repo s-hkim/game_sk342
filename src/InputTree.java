@@ -63,6 +63,7 @@ public class InputTree {
 		}
 		return null;
 	}
+	// for debugging
 	public void printTree (InputTreeNode node) {
 		if (node == null) {
 			return;

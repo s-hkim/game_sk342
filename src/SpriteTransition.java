@@ -14,15 +14,10 @@ public class SpriteTransition extends Transition {
     private final int[] widths;
     private final int[] heights;
     private int[] widthOffsets;
-    private final boolean left;
-    public boolean isLeft() {
-		return left;
-	}
-
+    private final boolean isLeft;
 	private final int direction;
-
     private int lastIndex;
-
+    
     public SpriteTransition(ImageView imageView, Duration duration, int centerOffset, int offsetX, int offsetY, 
     		int[] widths, int[] heights, boolean left) {
         this.imageView = imageView;
@@ -42,7 +37,7 @@ public class SpriteTransition extends Transition {
         this.offsetY = offsetY;
         this.widths = widths;
         this.heights = heights;
-        this.left = left;
+        this.isLeft = left;
         if (left) {
         	direction = 1;
         } else {
@@ -56,7 +51,6 @@ public class SpriteTransition extends Transition {
         final int index = Math.min((int) Math.floor(k * count), count - 1);
         if (index != lastIndex) {
             int x = direction* widthOffsets[index%count]  + offsetX;
-            //int y = (index / count) * heights[lastIndex] + offsetY;
             if (direction > 0) {
             	x = x - widths[index];
             }
@@ -64,4 +58,7 @@ public class SpriteTransition extends Transition {
             lastIndex = index;
         }
     }
+    public boolean getIsLeft() {
+		return isLeft;
+	}
 }
