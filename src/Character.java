@@ -150,9 +150,6 @@ public class Character{
 	public void animateHit() {
 		changeState(IN_HITSTUN);
 	}
-	/*
-	 * Animations/actions
-	 */
 	private void jump(double dx) {
 		Timeline tl = new Timeline();
 		tl.setCycleCount(47);
@@ -171,12 +168,9 @@ public class Character{
 			}
 		});
 		tl.getKeyFrames().add(moveJump);
-		// originally combined into a parallel transition
-		//myJumpingAnimation = jumpAnimation();
 		myJumpingPhysics = tl;
 		myJumpingPhysics.play();
 		jumpAnimation();
-		//myJumpingAnimation.play();
 	}
 	
 	public void shootFireball(int radius, int speed, int duration, int damage) {

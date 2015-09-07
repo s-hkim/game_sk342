@@ -35,7 +35,6 @@ class Game {
         myScene.setOnKeyPressed(e -> myInputManager.keyPressed(e));
         myScene.setOnKeyReleased(e -> myInputManager.keyReleased(e));
         myCurrentState = new SplashState(this);
-        // currentState = new LevelState(this, myInputManager);
         return myScene;
     }
     
