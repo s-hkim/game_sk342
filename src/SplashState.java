@@ -18,8 +18,8 @@ public class SplashState extends GameState {
 		background.setViewport(new Rectangle2D(0,0,800,336));
 		root.getChildren().add(background);
 		SpriteTransition backgroundAnimation = new SpriteTransition(background, 
-				Duration.millis(1000), 0, 0, 0, new int[]{800,800,800,800,800,800,800,800}, 
-				new int[]{336,336,336,336,336,336,336,336}, true);
+				Duration.millis(1000), 0, new SpriteObject(0, 0, new int[]{800,800,800,800,800,800,800,800}, 
+				new int[]{336,336,336,336,336,336,336,336}), true);
 		backgroundAnimation.setCycleCount(Animation.INDEFINITE);
 		backgroundAnimation.play();
 		image = new Image(getClass().getClassLoader().getResourceAsStream("titlescreen.png"));

@@ -6,7 +6,6 @@ import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -14,20 +13,24 @@ import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 public class Character{
-	private static final int SPRITE_CENTER = 274;
+	public static final int IDLING = 0;
+	public static final int WALKING_FORWARD = 1;
+	public static final int WALKING_BACKWARD = 2;
+	public static final int CROUCHING = 3;
+	public static final int JUMPING = 4;
+	public static final int ATTACKING = 5;
+	public static final int IN_HITSTUN = 6;
+	public static final int SPRITE_CENTER = 274;
+	
 	private int myID;
 	private Game myGame;
 	private ImageView myImage;
 	private Timeline myJumpingPhysics;
-	private SpriteTransition myIdle;
-	private SpriteTransition myAttack;
-	private SpriteTransition myWalkingForward;
-	private SpriteTransition myJumpingAnimation;
-	private Timeline myWalkingBackward;
-	private Timeline myCrouching;
 	private ArrayList<Fireball> myHitboxes;
 	private boolean myIsLeft;
 	private int myHealth;
+	
+	private CharacterState myState;
 	
 	public Character(Game g, boolean l, ImageView i, int id) {
 		this.myGame = g;
@@ -36,65 +39,10 @@ public class Character{
 		this.myHealth = 100;
 		this.myImage = i;
 		this.myID = id;
-		animateWalkingForward();
-		animateWalkingBackward();
-		animateCrouching();
-		myJumpingPhysics = new Timeline();
-		animateIdle();
+		
+		myState = new CharacterState(this, IDLING);
 	}
 	
-	private void animateCrouching() {
-		myCrouching = new Timeline();
-		myCrouching.getKeyFrames().add(new KeyFrame(Duration.millis(1000/60),
-				new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
-				if (myIsLeft){
-					myImage.setViewport(new Rectangle2D(330, 423, 48, 80));
-				} else {
-					myImage.setViewport(new Rectangle2D(170, 423, 48, 80));
-				}
-			}
-		}));
-		myCrouching.setCycleCount(1);
-		myCrouching.setOnFinished(new EventHandler<ActionEvent>(){
-			@Override
-			public void handle(ActionEvent arg0) {
-				animateIdle();
-			}
-		});
-	}
-	private void animateWalkingBackward() {
-		myWalkingBackward = new Timeline();
-		myWalkingBackward.getKeyFrames().add(new KeyFrame(Duration.millis(1000/60),
-				new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
-				if (myIsLeft){
-					myImage.setViewport(new Rectangle2D(279, 423, 48, 80));
-				} else {
-					myImage.setViewport(new Rectangle2D(221, 423, 48, 80));
-				}
-			}
-		}));
-		myWalkingBackward.setCycleCount(1);
-		myWalkingBackward.setOnFinished(new EventHandler<ActionEvent>(){
-			@Override
-			public void handle(ActionEvent arg0) {
-				animateIdle();
-			}
-		});
-	}
-	private void animateWalkingForward() {
-		myWalkingForward = new SpriteTransition(myImage, Duration.millis(500), 
-				SPRITE_CENTER, 5, 1070, 
-				new int[]{48,48,48,48}, new int[] {85,85,85,85}, myIsLeft);
-		myWalkingForward.setCycleCount(1);
-		myWalkingForward.setOnFinished(new EventHandler<ActionEvent>(){
-			@Override
-			public void handle(ActionEvent arg0) {
-				animateIdle();
-			}
-		});
-	}
 	public void executeAction(String instructions) {
 		switch (instructions) {
 		case "F":
@@ -160,60 +108,47 @@ public class Character{
 		fireball.executeAction();
 	}
 	private void lHit() {
-		stopAnimation();
-		myAttack = new SpriteTransition(myImage, Duration.millis(500), 
-				SPRITE_CENTER, 3, 87, new int[]{0,49,63,55,75}, new int[]{0,85,85,85,85}, myIsLeft);
-		myAttack.setCycleCount(1);
-		myAttack.setOnFinished(new EventHandler<ActionEvent>(){
+		SpriteTransition attacking = new SpriteTransition(myImage, Duration.millis(500), 
+				SPRITE_CENTER, new SpriteObject(3, 87, new int[]{0,49,63,55,75}, new int[]{0,85,85,85,85}), myIsLeft);
+		attacking.setCycleCount(1);
+		attacking.setOnFinished(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle(ActionEvent arg0) {
 				animateIdle();
 			}
 		});
 		createHitbox(5, 28);
-		myAttack.play();
+		changeState(ATTACKING, attacking);
 	}
 	private void mHit() {
-		stopAnimation();
-		myAttack = new SpriteTransition(myImage, Duration.millis(500), 
-				SPRITE_CENTER, 3, 174, new int[]{0,46,76}, new int[]{85,85,85}, myIsLeft);
-		myAttack.setCycleCount(1);
-		myAttack.setOnFinished(new EventHandler<ActionEvent>(){
+		SpriteTransition attacking = new SpriteTransition(myImage, Duration.millis(500), 
+				SPRITE_CENTER, new SpriteObject(3, 174, new int[]{0,46,76}, new int[]{85,85,85}), myIsLeft);
+		attacking.setCycleCount(1);
+		attacking.setOnFinished(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle(ActionEvent arg0) {
 				animateIdle();
 			}
 		});
 		createHitbox(10, 28);
-		myAttack.play();
+		changeState(ATTACKING, attacking);
 	}
 	private void hHit() {
-		stopAnimation();
-		myAttack = new SpriteTransition(myImage, Duration.millis(750), 
-				SPRITE_CENTER, 1, 1152, new int[]{0,49,56,50,48,70}, new int[]{85,85,85,85,85,85}, myIsLeft);
-		myAttack.setCycleCount(1);
-		myAttack.setOnFinished(new EventHandler<ActionEvent>(){
+		SpriteTransition attacking = new SpriteTransition(myImage, Duration.millis(750), 
+				SPRITE_CENTER, new SpriteObject(1, 1152, new int[]{0,49,56,50,48,70}, new int[]{85,85,85,85,85,85}), myIsLeft);
+		attacking.setCycleCount(1);
+		attacking.setOnFinished(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle(ActionEvent arg0) {
 				animateIdle();
 			}
 		});
 		createHitbox(10, 43);
-		myAttack.play();
+		changeState(ATTACKING, attacking);
 	}
 
 	public void animateHit() {
-		stopAnimation();
-		myAttack = new SpriteTransition(myImage, Duration.millis(300), 
-				SPRITE_CENTER, 2, 1966, new int[]{0,47,50,52,48}, new int[]{78,78,78,78,78}, myIsLeft);
-		myAttack.setCycleCount(1);
-		myAttack.setOnFinished(new EventHandler<ActionEvent>(){
-			@Override
-			public void handle(ActionEvent arg0) {
-				animateIdle();
-			}
-		});
-		myAttack.play();
+		changeState(IN_HITSTUN);
 	}
 	/*
 	 * Animations/actions
@@ -237,10 +172,11 @@ public class Character{
 		});
 		tl.getKeyFrames().add(moveJump);
 		// originally combined into a parallel transition
-		myJumpingAnimation = jumpAnimation();
+		//myJumpingAnimation = jumpAnimation();
 		myJumpingPhysics = tl;
 		myJumpingPhysics.play();
-		myJumpingAnimation.play();
+		jumpAnimation();
+		//myJumpingAnimation.play();
 	}
 	
 	public void shootFireball(int radius, int speed, int duration, int damage) {
@@ -296,7 +232,6 @@ public class Character{
 		} else fireballAnimation(Duration.millis(1000), fireball);
 	}
 	public void shootH() {
-		// TODO: merge this with shootFireball
 		int direction;
 		if (myIsLeft) {
 			direction = 1;
@@ -345,105 +280,46 @@ public class Character{
 	
 	
 	private void animateIdle () {
-		stopAnimation();
-		
-		SpriteTransition sprite = new SpriteTransition(myImage, Duration.millis(1000), 
-				SPRITE_CENTER,	3, 0,	new int[]{48,48,48}, new int[]{85,85,85}, myIsLeft);
-		sprite.setCycleCount(Animation.INDEFINITE);
-		myIdle = sprite;
-		myIdle.play();
-	}
-	private void stopAnimation() {
-		myWalkingForward.stop();
-		myWalkingBackward.stop();
-		myCrouching.stop();
-		if (myJumpingAnimation != null) {
-			myJumpingAnimation.stop();
-		}
-		if (myIdle != null) {
-			myIdle.stop();
-		}
-		if (myAttack != null) {
-			myAttack.stop();
-		}
+		changeState(IDLING);
 	}
 	private void fireballAnimation(Duration d, Fireball fireball) {
-		stopAnimation();
+		
 		SpriteTransition sprite = new SpriteTransition(myImage, d, SPRITE_CENTER,
-				5, 2298, new int[]{54,58,65,74}, new int[] {81,81,81,81},myIsLeft);
+				new SpriteObject(5, 2298, new int[]{54,58,65,74}, new int[] {81,81,81,81}),myIsLeft);
 		sprite.setCycleCount(1);
 		sprite.setOnFinished(new EventHandler<ActionEvent>(){
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				//fireball.executeAction();
 				animateIdle();
 			}
 			
 		});
-		myAttack = sprite;
-		myAttack.play();
+		changeState(ATTACKING, sprite);
 		fireball.getMyTimeline().setDelay(d);
 		fireball.executeAction();
 	}
-	private SpriteTransition jumpAnimation() {
-		stopAnimation();
-		SpriteTransition sprite = new SpriteTransition(myImage, Duration.millis(47*1000/60), 
-				SPRITE_CENTER, 5, 902, 
-				new int[]{45,45,45,45}, new int[] {100,100,100,100},myIsLeft);
-		sprite.setCycleCount(1);
-		sprite.setOnFinished(new EventHandler<ActionEvent>(){
-
-			@Override
-			public void handle(ActionEvent arg0) {
-				//myImage.setTranslateY(myGame.myScene.getHeight()/2+30);
-				animateIdle();
-			}
-			
-		});
-		return sprite;
+	private void jumpAnimation() {
+		changeState(JUMPING);
 	}
 	private void walkAnimation() {
-		myIdle.stop();
-		myJumpingPhysics.stop();
-		myWalkingBackward.stop();
-		myCrouching.stop();
-		if (myWalkingForward.getIsLeft() != myIsLeft) {
-			animateWalkingForward();
-		}
-		myWalkingForward.play();
+		changeState(WALKING_FORWARD);
 	}
 	private void block() {
-		myIdle.stop();
-		myJumpingPhysics.stop();
-		myWalkingForward.stop();
-		myCrouching.stop();
-		myWalkingBackward.play();
+		changeState(WALKING_BACKWARD);
 	}
 	private void crouch() {
-		myIdle.stop();
-		myJumpingPhysics.stop();
-		myWalkingForward.stop();
-		myWalkingBackward.stop();
-		myCrouching.play();
+		changeState(CROUCHING);
 	}
-	public boolean getInAir() {
-		return myJumpingPhysics.getStatus() == Animation.Status.RUNNING;
-	}
-	public boolean getAttacking() {
-		if (myAttack == null) {
-			return false;
-		}
-		return myAttack.getStatus() == Animation.Status.RUNNING;
+	public boolean isTakingAction() {
+		int state = getState();
+		return state == JUMPING || state == ATTACKING || state == IN_HITSTUN;
 	}
 	public ImageView getMyImage() {
 		return myImage;
 	}
 	public ArrayList<Fireball> getHitboxes() {
 		return myHitboxes;
-	}
-	public boolean getBlocking() {
-		return myWalkingBackward.getStatus() == Animation.Status.RUNNING;
 	}
 	public boolean getOrientation() {
 		return myIsLeft;
@@ -462,5 +338,15 @@ public class Character{
 	}
 	public void inflictDamage(int d) {
 		myHealth = myHealth - d;
+	}
+	
+	public int getState() {
+		return this.myState.getState();
+	}
+	public void changeState(int state) {
+		this.myState.changeState(state);
+	}
+	public void changeState(int state, Animation animation) {
+		this.myState.changeState(state, animation);
 	}
 }

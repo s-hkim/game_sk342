@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import javafx.animation.Animation;
-import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -67,7 +66,6 @@ public class LevelState extends GameState {
 	}
 
 	private void createTimerText() {
-		// TODO Auto-generated method stub
 		myTimerText = new Text();
         myTimerText.setFont(new Font("Courier", 100));
         myTimerText.setX(320);
@@ -115,8 +113,8 @@ public class LevelState extends GameState {
 		background.setViewport(new Rectangle2D(0,0,800,336));
 		myRoot.getChildren().add(background);
 		SpriteTransition backgroundAnimation = new SpriteTransition(background, 
-				Duration.millis(1000), 0, 0, 0, new int[]{800,800,800,800,800,800,800,800}, 
-				new int[]{336,336,336,336,336,336,336,336}, true);
+				Duration.millis(1000), 0, new SpriteObject(0, 0, new int[]{800,800,800,800,800,800,800,800}, 
+				new int[]{336,336,336,336,336,336,336,336}), true);
 		backgroundAnimation.setCycleCount(Animation.INDEFINITE);
 		backgroundAnimation.play();
 	}
@@ -184,7 +182,6 @@ public class LevelState extends GameState {
         }
 	}
 	private void updateTimer() {
-		// TODO Auto-generated method stub
 		if (myFrameCount == 30) {
 			myTimer--;
 		}
@@ -255,16 +252,8 @@ public class LevelState extends GameState {
     			text.setText(""+victim.getHealth());
     			myRoot.getChildren().remove(fireballImage);
     			hitboxes.remove(f);
-    			// TODO: remove victim's hitboxes?
     		}
     	}
-		if (actor.getAttacking()) {
-			Bounds actorBounds = actor.getMyImage().getBoundsInParent();
-			Bounds victimBounds = victim.getMyImage().getBoundsInParent();
-			if (actorBounds.intersects(victimBounds)) {
-				// TODO: figure this out
-			}
-		}
 	}
 	private void doCharacterAction(Character character) {
 		boolean up;
@@ -294,7 +283,7 @@ public class LevelState extends GameState {
 		} else {
 			return;
 		}
-		if (!character.getInAir() && !character.getAttacking()) {
+		if (!character.isTakingAction()) {
 
         	String instruction = myMoveTree.parseInput(inputCodes);
         	if (instruction != null) {

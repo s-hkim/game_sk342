@@ -68,18 +68,8 @@ public class InputTree {
 		if (node == null) {
 			return;
 		}
-		String a;
-		String b;
-		if (node.myCode == null) {
-			a = "null";
-		} else {
-			a = node.myCode;
-		}
-		if (node.myMove == null) {
-			b = "null";
-		} else {
-			b = node.myMove;
-		}
+		String a = node.myCode;
+		String b = node.myMove;
 		System.out.println(a + " " + b);
 		for (InputTreeNode n: node.myChildren) {
 			printTree(n);

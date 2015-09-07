@@ -22,11 +22,14 @@ public class SpriteTransition extends Transition {
 	private final int direction;
     private int lastIndex;
     
-    public SpriteTransition(ImageView imageView, Duration duration, int centerOffset, int offsetX, int offsetY, 
-    		int[] widths, int[] heights, boolean left) {
+    public SpriteTransition(ImageView imageView, Duration duration, int centerOffset, SpriteObject dimensions, boolean left) {
         this.imageView = imageView;
-        this.count = widths.length;
         this.centerOffset = centerOffset;
+        this.offsetY = dimensions.getyOffset();
+        this.widths = dimensions.getWidths();
+        this.heights = dimensions.getHeights();
+        this.count = widths.length;
+        int offsetX = dimensions.getxOffset();
         if (left) {
         	this.offsetX = offsetX + this.centerOffset;
         } else {
@@ -38,9 +41,7 @@ public class SpriteTransition extends Transition {
         	s = s + widths[i];
         	widthOffsets[i] = s;
         }
-        this.offsetY = offsetY;
-        this.widths = widths;
-        this.heights = heights;
+        
         this.isLeft = left;
         if (left) {
         	direction = 1;
